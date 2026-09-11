@@ -1,0 +1,54 @@
+@page
+@model techtalks_forsa.Pages.Profile.ViewModel
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<h1>My Profile</h1>
+
+<div class="card">
+    <div class="card-body">
+
+        <h2>Education</h2>
+
+        <p>
+            @Model.Profile?.Education
+        </p>
+
+        <p class="text-muted">
+            Education information is self-reported and has not been verified.
+        </p>
+
+        <hr />
+
+        <h2>About Me</h2>
+
+        <p>
+            @Model.Profile?.Bio
+        </p>
+
+        <hr />
+
+        <h2>I Teach</h2>
+
+        <p>
+            @Model.Profile?.Teach
+        </p>
+
+        <hr />
+
+        <h2>I Want to Learn</h2>
+
+        <p>
+            @Model.Profile?.WantToLearn
+        </p>
+
+        <hr />
+
+        <a asp-page="/Profile/Edit" class="btn btn-primary">
+            Edit Profile
+        </a>
+
+    </div>
+</div>

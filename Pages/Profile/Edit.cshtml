@@ -1,0 +1,72 @@
+@page
+@model techtalks_forsa.Pages.Profile.EditModel
+
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+<h1>Edit Profile</h1>
+
+<form method="post">
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Education" class="form-label"></label>
+
+        <textarea asp-for="Input.Education"
+                  class="form-control"
+                  rows="3"></textarea>
+
+        <span asp-validation-for="Input.Education"
+              class="text-danger"></span>
+
+        <small class="form-text text-muted">
+            Education information is self-reported and has not been verified.
+        </small>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Bio" class="form-label"></label>
+
+        <textarea asp-for="Input.Bio"
+                  class="form-control"
+                  rows="5"></textarea>
+
+        <span asp-validation-for="Input.Bio"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Teach" class="form-label"></label>
+
+        <textarea asp-for="Input.Teach"
+                  class="form-control"
+                  rows="3"
+                  placeholder="Example: Mathematics, Python, English"></textarea>
+
+        <span asp-validation-for="Input.Teach"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.WantToLearn" class="form-label"></label>
+
+        <textarea asp-for="Input.WantToLearn"
+                  class="form-control"
+                  rows="3"
+                  placeholder="Example: French, Graphic Design"></textarea>
+
+        <span asp-validation-for="Input.WantToLearn"
+              class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Save Profile
+    </button>
+
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
