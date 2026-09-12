@@ -1,0 +1,63 @@
+@page
+@model techtalks_forsa.Pages.Profile.Minor.CreateModel
+
+@{
+    ViewData["Title"] = "Add Minor Profile";
+}
+
+<h1>Add Minor Profile</h1>
+
+<p class="text-muted">
+    This profile is managed by the guardian and does not have its own login account.
+</p>
+
+<form method="post">
+
+    <div asp-validation-summary="ModelOnly"
+         class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Name"
+               class="form-label"></label>
+
+        <input asp-for="Input.Name"
+               class="form-control" />
+
+        <span asp-validation-for="Input.Name"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Age"
+               class="form-label"></label>
+
+        <input asp-for="Input.Age"
+               class="form-control"
+               type="number" />
+
+        <span asp-validation-for="Input.Age"
+              class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Grade"
+               class="form-label"></label>
+
+        <input asp-for="Input.Grade"
+               class="form-control"
+               placeholder="Example: Grade 7" />
+
+        <span asp-validation-for="Input.Grade"
+              class="text-danger"></span>
+    </div>
+
+    <button type="submit"
+            class="btn btn-primary">
+        Create Minor Profile
+    </button>
+
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -20,4 +20,6 @@ public class Profile
 
     [StringLength(500)]
     public string? WantToLearn { get; set; }
+
+    public bool IsGuardian {get; set;}
 }
