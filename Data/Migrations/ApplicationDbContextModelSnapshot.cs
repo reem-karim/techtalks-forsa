@@ -224,6 +224,36 @@ namespace techtalks_forsa.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("techtalks_forsa.Models.MinorProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Grade")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("GuardianProfileId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuardianProfileId");
+
+                    b.ToTable("MinorProfiles");
+                });
+
             modelBuilder.Entity("techtalks_forsa.Models.Profile", b =>
                 {
                     b.Property<int>("Id")
@@ -239,6 +269,9 @@ namespace techtalks_forsa.Data.Migrations
                     b.Property<string>("Education")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsGuardian")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Teach")
                         .HasMaxLength(500)
@@ -306,6 +339,17 @@ namespace techtalks_forsa.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("techtalks_forsa.Models.MinorProfile", b =>
+                {
+                    b.HasOne("techtalks_forsa.Models.Profile", "GuardianProfile")
+                        .WithMany()
+                        .HasForeignKey("GuardianProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GuardianProfile");
                 });
 #pragma warning restore 612, 618
         }

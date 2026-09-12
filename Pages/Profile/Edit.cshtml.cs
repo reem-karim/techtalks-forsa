@@ -43,6 +43,9 @@ namespace techtalks_forsa.Pages.Profile
             [StringLength(500)]
             [Display(Name = "I Want to Learn")]
             public string? WantToLearn { get; set; }
+
+            [Display(Name = "I am a Guardian (for minors) and I am an adult (above 18 yrs old)")]
+            public bool IsGuardian { get; set; }
         }
 
         public async Task OnGetAsync()
@@ -66,6 +69,7 @@ namespace techtalks_forsa.Pages.Profile
             Input.Bio = profile.Bio;
             Input.Teach = profile.Teach;
             Input.WantToLearn = profile.WantToLearn;
+            Input.IsGuardian = profile.IsGuardian;
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -99,6 +103,8 @@ namespace techtalks_forsa.Pages.Profile
             profile.Bio = Input.Bio;
             profile.Teach = Input.Teach;
             profile.WantToLearn = Input.WantToLearn;
+            profile.IsGuardian = Input.IsGuardian;
+
 
             await _context.SaveChangesAsync();
 

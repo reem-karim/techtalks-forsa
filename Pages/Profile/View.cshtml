@@ -46,7 +46,26 @@
 
         <hr />
 
-        <a asp-page="/Profile/Edit" class="btn btn-primary">
+              @if (Model.Profile?.IsGuardian == true)
+        {
+            <hr />
+
+            <h2>Guardian</h2>
+
+            <p>
+                You are registered as a guardian.
+            </p>
+
+            <a asp-page="/Profile/Minor/Create"
+               class="btn btn-primary">
+                Add Minor Profile
+            </a>
+        }
+
+        <hr />
+
+
+    <a asp-page="/Profile/Edit" class="btn btn-primary">
             Edit Profile
         </a>
 
