@@ -1,0 +1,42 @@
+@page "{id:int}"
+@model techtalks_forsa.Pages.Listings.EditModel
+
+@{
+    ViewData["Title"] = "Edit Listing";
+}
+
+<h1>Edit Listing</h1>
+
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Type" class="form-label"></label>
+        <select asp-for="Input.Type" class="form-select">
+            <option value="@techtalks_forsa.Models.ListingType.Offer">I can teach this</option>
+            <option value="@techtalks_forsa.Models.ListingType.Learn">I want to learn this</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Title" class="form-label"></label>
+        <input asp-for="Input.Title" class="form-control" />
+        <span asp-validation-for="Input.Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Category" class="form-label"></label>
+        <select asp-for="Input.Category" class="form-select" asp-items="Model.CategoryOptions"></select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Description" class="form-label"></label>
+        <textarea asp-for="Input.Description" class="form-control" rows="4"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

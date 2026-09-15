@@ -10,4 +10,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public DbSet<MinorProfile> MinorProfiles { get; set; }
 
+    public DbSet<Listing> Listings { get; set; }
+
 }
