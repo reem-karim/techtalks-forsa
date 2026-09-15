@@ -9,6 +9,9 @@ public class Profile
     [Required]
     public string UserId { get; set; } = string.Empty;
 
+    [StringLength(100)]
+    public string? DisplayName { get; set; }
+
     [StringLength(500)]
     public string? Education { get; set; }
 

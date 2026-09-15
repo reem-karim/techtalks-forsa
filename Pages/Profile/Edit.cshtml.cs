@@ -28,6 +28,11 @@ namespace techtalks_forsa.Pages.Profile
 
         public class ProfileInputModel
         {
+            [Required]
+            [StringLength(100)]
+            [Display(Name = "Display Name")]
+            public string DisplayName { get; set; } = string.Empty;
+
             [StringLength(500)]
             [Display(Name = "Education")]
             public string? Education { get; set; }
@@ -51,20 +56,14 @@ namespace techtalks_forsa.Pages.Profile
         public async Task OnGetAsync()
         {
             var userId = _userManager.GetUserId(User);
-
-            if (userId == null)
-            {
-                return;
-            }
+            if (userId == null) return;
 
             var profile = await _context.Profiles
                 .FirstOrDefaultAsync(p => p.UserId == userId);
 
-            if (profile == null)
-            {
-                return;
-            }
+            if (profile == null) return;
 
+            Input.DisplayName = profile.DisplayName ?? string.Empty;
             Input.Education = profile.Education;
             Input.Bio = profile.Bio;
             Input.Teach = profile.Teach;
@@ -80,7 +79,6 @@ namespace techtalks_forsa.Pages.Profile
             }
 
             var userId = _userManager.GetUserId(User);
-
             if (userId == null)
             {
                 return Challenge();
@@ -95,16 +93,15 @@ namespace techtalks_forsa.Pages.Profile
                 {
                     UserId = userId
                 };
-
                 _context.Profiles.Add(profile);
             }
 
+            profile.DisplayName = Input.DisplayName;
             profile.Education = Input.Education;
             profile.Bio = Input.Bio;
             profile.Teach = Input.Teach;
             profile.WantToLearn = Input.WantToLearn;
             profile.IsGuardian = Input.IsGuardian;
-
 
             await _context.SaveChangesAsync();
 

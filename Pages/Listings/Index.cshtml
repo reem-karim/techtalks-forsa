@@ -1,0 +1,49 @@
+@page
+@model techtalks_forsa.Pages.Listings.IndexModel
+
+@{
+    ViewData["Title"] = "My Listings";
+}
+
+<h1>My Listings</h1>
+
+<p>
+    <a asp-page="/Listings/Create" class="btn btn-primary">+ New Listing</a>
+</p>
+
+@if (!Model.MyListings.Any())
+{
+    <p>You haven't posted any listings yet.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Category</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var listing in Model.MyListings)
+            {
+                <tr>
+                    <td>@listing.Title</td>
+                    <td>@(listing.Type == techtalks_forsa.Models.ListingType.Offer ? "I can teach" : "I want to learn")</td>
+                    <td>@listing.Category</td>
+                    <td>
+                        <a asp-page="/Listings/Edit" asp-route-id="@listing.Id">Edit</a>
+                        |
+                        <form method="post" asp-page-handler="Delete" asp-route-id="@listing.Id"
+                              style="display:inline"
+                              onsubmit="return confirm('Delete this listing?');">
+                            <button type="submit" class="btn btn-link text-danger p-0">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
