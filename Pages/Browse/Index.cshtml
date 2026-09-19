@@ -1,0 +1,46 @@
+@page
+@model techtalks_forsa.Pages.Browse.IndexModel
+
+@{
+    ViewData["Title"] = "Browse Skills";
+}
+
+<h1>Browse Skills</h1>
+
+<form method="get" class="row g-3 mb-4">
+    <div class="col-auto">
+        <select name="Category" class="form-select" asp-items="Model.CategoryOptions">
+            <option value="">All categories</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <input type="text" name="Keyword" class="form-control" placeholder="Search keyword..." value="@Model.Keyword" />
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </div>
+</form>
+
+@if (!Model.Results.Any())
+{
+    <p>No listings found. Try a different filter.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var item in Model.Results)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Listing.Title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@item.Listing.Category</h6>
+                        <p class="card-text">@item.Listing.Description</p>
+                        <p class="card-text"><small class="text-muted">Taught by @item.OwnerDisplayName</small></p>
+                        <a asp-page="/Browse/Details" asp-route-id="@item.Listing.Id" class="btn btn-outline-primary">View</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
