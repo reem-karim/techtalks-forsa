@@ -1,0 +1,24 @@
+@page "{id:int}"
+@model techtalks_forsa.Pages.Browse.DetailsModel
+
+@{
+    ViewData["Title"] = Model.Listing?.Title ?? "Listing";
+}
+
+<h1>@Model.Listing?.Title</h1>
+<h6 class="text-muted">@Model.Listing?.Category — taught by @Model.OwnerDisplayName</h6>
+
+<p class="mt-3">@Model.Listing?.Description</p>
+
+@if (!Model.IsOwnListing)
+{
+    <a asp-page="/SwapRequests/Propose" asp-route-listingId="@Model.Listing!.Id" class="btn btn-primary">
+        Propose a Skill Swap
+    </a>
+}
+else
+{
+    <p><em>This is your own listing.</em></p>
+}
+
+<p class="mt-3"><a asp-page="/Browse/Index">&larr; Back to Browse</a></p>

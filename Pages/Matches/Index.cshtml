@@ -1,0 +1,40 @@
+@page
+@model techtalks_forsa.Pages.Matches.IndexModel
+
+@{
+    ViewData["Title"] = "Suggested Matches";
+}
+
+<h1>Suggested Matches</h1>
+
+@if (!Model.Groups.Any())
+{
+    <p>
+        Add a "I want to learn" listing first, and we'll suggest people who can teach it.
+        <a asp-page="/Listings/Create">Add a listing</a>
+    </p>
+}
+else
+{
+    @foreach (var group in Model.Groups)
+    {
+        <h4 class="mt-4">Because you want to learn: @group.LearnListing.Title</h4>
+
+        @if (!group.MatchingOffers.Any())
+        {
+            <p>No matches yet in this category.</p>
+        }
+        else
+        {
+            <ul class="list-group mb-3">
+                @foreach (var offer in group.MatchingOffers)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @offer.Title
+                        <a asp-page="/Browse/Details" asp-route-id="@offer.Id" class="btn btn-sm btn-outline-primary">View</a>
+                    </li>
+                }
+            </ul>
+        }
+    }
+}
