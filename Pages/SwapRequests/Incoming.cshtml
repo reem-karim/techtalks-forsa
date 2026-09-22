@@ -1,0 +1,70 @@
+@page
+@model techtalks_forsa.Pages.SwapRequests.IncomingModel
+
+@{
+    ViewData["Title"] = "Incoming Requests";
+}
+
+<h1>Incoming Requests</h1>
+
+@if (!Model.Requests.Any())
+{
+    <p>No one has requested a swap with you yet.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>For your listing</th>
+                <th>They're offering</th>
+                <th>Message</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var r in Model.Requests)
+            {
+                <tr>
+                    <td>@r.TargetListing?.Title</td>
+
+                    <td>@(r.OfferedListing?.Title ?? "—")</td>
+
+                    <td>@r.Message</td>
+
+                    <td>@r.Status</td>
+
+                    <td>
+                        @if (r.Status == techtalks_forsa.Models.SwapRequestStatus.Pending)
+                        {
+                            <form method="post"
+                                  asp-page-handler="Respond"
+                                  style="display:inline">
+
+                                <input type="hidden"
+                                       name="id"
+                                       value="@r.Id" />
+
+                                <button type="submit"
+                                        name="decision"
+                                        value="accept"
+                                        class="btn btn-sm btn-success">
+                                    Accept
+                                </button>
+
+                                <button type="submit"
+                                        name="decision"
+                                        value="decline"
+                                        class="btn btn-sm btn-outline-danger">
+                                    Decline
+                                </button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

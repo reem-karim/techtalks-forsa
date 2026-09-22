@@ -12,4 +12,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public DbSet<Listing> Listings { get; set; }
 
+    public DbSet<SwapRequest> SwapRequests { get; set; }
+
 }
