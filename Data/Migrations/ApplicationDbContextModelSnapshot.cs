@@ -331,6 +331,43 @@ namespace techtalks_forsa.Data.Migrations
                     b.ToTable("Profiles");
                 });
 
+            modelBuilder.Entity("techtalks_forsa.Models.SwapRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("OfferedListingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RequesterUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TargetListingId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OfferedListingId");
+
+                    b.HasIndex("TargetListingId");
+
+                    b.ToTable("SwapRequests");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -391,6 +428,23 @@ namespace techtalks_forsa.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("GuardianProfile");
+                });
+
+            modelBuilder.Entity("techtalks_forsa.Models.SwapRequest", b =>
+                {
+                    b.HasOne("techtalks_forsa.Models.Listing", "OfferedListing")
+                        .WithMany()
+                        .HasForeignKey("OfferedListingId");
+
+                    b.HasOne("techtalks_forsa.Models.Listing", "TargetListing")
+                        .WithMany()
+                        .HasForeignKey("TargetListingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OfferedListing");
+
+                    b.Navigation("TargetListing");
                 });
 #pragma warning restore 612, 618
         }

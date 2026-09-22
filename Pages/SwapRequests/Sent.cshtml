@@ -1,0 +1,46 @@
+@page
+@model techtalks_forsa.Pages.SwapRequests.SentModel
+
+@{
+    ViewData["Title"] = "My Sent Requests";
+}
+
+<h1>My Sent Requests</h1>
+
+@if (!Model.Requests.Any())
+{
+    <p>You haven't sent any swap requests yet.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Listing</th>
+                <th>Status</th>
+                <th>Sent</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var r in Model.Requests)
+            {
+                <tr>
+                    <td>@r.TargetListing?.Title</td>
+
+                    <td>
+                        <span class="badge bg-@(r.Status == techtalks_forsa.Models.SwapRequestStatus.Accepted
+                            ? "success"
+                            : r.Status == techtalks_forsa.Models.SwapRequestStatus.Declined
+                                ? "danger"
+                                : "secondary")">
+                            @r.Status
+                        </span>
+                    </td>
+
+                    <td>@r.CreatedAt.ToLocalTime().ToString("g")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

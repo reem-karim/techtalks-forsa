@@ -1,0 +1,40 @@
+@page
+@model techtalks_forsa.Pages.SwapRequests.ProposeModel
+
+@{
+    ViewData["Title"] = "Propose a Swap";
+}
+
+<h1>Propose a Swap</h1>
+<h6 class="text-muted">For: @Model.TargetListing?.Title</h6>
+
+<form method="post" class="mt-3">
+    <input type="hidden" asp-for="ListingId" />
+
+    <div class="mb-3">
+        <label class="form-label">
+            What will you offer in exchange? (optional)
+        </label>
+
+        <select asp-for="Input.OfferedListingId"
+                class="form-select"
+                asp-items="Model.MyOfferOptions">
+            <option value="">-- Just ask, no offer yet --</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Message" class="form-label">
+            Message
+        </label>
+
+        <textarea asp-for="Input.Message"
+                  class="form-control"
+                  rows="4"
+                  placeholder="Introduce yourself and explain what you're proposing..."></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Send Request
+    </button>
+</form>
