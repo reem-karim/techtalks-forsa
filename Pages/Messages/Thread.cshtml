@@ -1,0 +1,36 @@
+@page
+@model techtalks_forsa.Pages.Messages.ThreadModel
+
+@{
+    ViewData["Title"] = "Conversation with " + Model.OtherDisplayName;
+}
+
+<h1>Conversation with @Model.OtherDisplayName</h1>
+
+<div class="border rounded p-3 mb-3" style="max-height: 400px; overflow-y: auto;">
+    @foreach (var m in Model.Messages)
+    {
+        <div class="mb-2">
+            <strong>@(m.SenderId == Model.UserId ? Model.OtherDisplayName : "You"):</strong>
+            @m.Content
+            <div><small class="text-muted">@m.SentAt.ToLocalTime().ToString("g")</small></div>
+        </div>
+    }
+    @if (!Model.Messages.Any())
+    {
+        <p class="text-muted">No messages yet. Say hello!</p>
+    }
+</div>
+
+<form method="post">
+    <input type="hidden" asp-for="UserId" />
+    <div class="mb-3">
+        <textarea asp-for="Input.Content" class="form-control" rows="2" placeholder="Type a message..."></textarea>
+        <span asp-validation-for="Input.Content" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Send</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

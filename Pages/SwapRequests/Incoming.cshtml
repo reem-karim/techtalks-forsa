@@ -23,44 +23,26 @@ else
                 <th></th>
             </tr>
         </thead>
-
         <tbody>
             @foreach (var r in Model.Requests)
             {
                 <tr>
                     <td>@r.TargetListing?.Title</td>
-
                     <td>@(r.OfferedListing?.Title ?? "—")</td>
-
                     <td>@r.Message</td>
-
                     <td>@r.Status</td>
-
                     <td>
                         @if (r.Status == techtalks_forsa.Models.SwapRequestStatus.Pending)
                         {
-                            <form method="post"
-                                  asp-page-handler="Respond"
-                                  style="display:inline">
-
-                                <input type="hidden"
-                                       name="id"
-                                       value="@r.Id" />
-
-                                <button type="submit"
-                                        name="decision"
-                                        value="accept"
-                                        class="btn btn-sm btn-success">
-                                    Accept
-                                </button>
-
-                                <button type="submit"
-                                        name="decision"
-                                        value="decline"
-                                        class="btn btn-sm btn-outline-danger">
-                                    Decline
-                                </button>
+                            <form method="post" asp-page-handler="Respond" style="display:inline">
+                                <input type="hidden" name="id" value="@r.Id" />
+                                <button type="submit" name="decision" value="accept" class="btn btn-sm btn-success">Accept</button>
+                                <button type="submit" name="decision" value="decline" class="btn btn-sm btn-outline-danger">Decline</button>
                             </form>
+                        }
+                        else
+                        {
+                            <a asp-page="/Messages/Thread" asp-route-userId="@r.RequesterUserId">Message</a>
                         }
                     </td>
                 </tr>
