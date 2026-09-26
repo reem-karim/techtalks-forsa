@@ -14,4 +14,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public DbSet<SwapRequest> SwapRequests { get; set; }
 
+    public DbSet<Message> Messages { get; set; }
+
 }

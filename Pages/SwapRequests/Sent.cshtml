@@ -19,26 +19,23 @@ else
                 <th>Listing</th>
                 <th>Status</th>
                 <th>Sent</th>
+                <th></th>
             </tr>
         </thead>
-
         <tbody>
             @foreach (var r in Model.Requests)
             {
                 <tr>
                     <td>@r.TargetListing?.Title</td>
-
                     <td>
-                        <span class="badge bg-@(r.Status == techtalks_forsa.Models.SwapRequestStatus.Accepted
-                            ? "success"
-                            : r.Status == techtalks_forsa.Models.SwapRequestStatus.Declined
-                                ? "danger"
-                                : "secondary")">
+                        <span class="badge bg-@(r.Status == techtalks_forsa.Models.SwapRequestStatus.Accepted ? "success" : r.Status == techtalks_forsa.Models.SwapRequestStatus.Declined ? "danger" : "secondary")">
                             @r.Status
                         </span>
                     </td>
-
                     <td>@r.CreatedAt.ToLocalTime().ToString("g")</td>
+                    <td>
+                        <a asp-page="/Messages/Thread" asp-route-userId="@r.TargetListing!.OwnerUserId">Message</a>
+                    </td>
                 </tr>
             }
         </tbody>
