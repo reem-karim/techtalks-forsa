@@ -1,0 +1,28 @@
+@page
+@model techtalks_forsa.Pages.Messages.InboxModel
+
+@{
+    ViewData["Title"] = "Messages";
+}
+
+<h1>Messages</h1>
+
+@if (!Model.Conversations.Any())
+{
+    <p>No conversations yet. Start one from a listing or swap request.</p>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var c in Model.Conversations)
+        {
+            <a asp-page="/Messages/Thread" asp-route-userId="@c.OtherUserId" class="list-group-item list-group-item-action">
+                <div class="d-flex justify-content-between">
+                    <strong>@c.OtherDisplayName</strong>
+                    <small class="text-muted">@c.LastSentAt.ToLocalTime().ToString("g")</small>
+                </div>
+                <div class="text-truncate">@c.LastMessage</div>
+            </a>
+        }
+    </ul>
+}
