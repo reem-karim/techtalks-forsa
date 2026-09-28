@@ -360,6 +360,33 @@ namespace techtalks_forsa.Data.Migrations
                     b.ToTable("Profiles");
                 });
 
+            modelBuilder.Entity("techtalks_forsa.Models.Session", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ScheduledAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SwapRequestId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SwapRequestId");
+
+                    b.ToTable("Sessions");
+                });
+
             modelBuilder.Entity("techtalks_forsa.Models.SwapRequest", b =>
                 {
                     b.Property<int>("Id")
@@ -457,6 +484,17 @@ namespace techtalks_forsa.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("GuardianProfile");
+                });
+
+            modelBuilder.Entity("techtalks_forsa.Models.Session", b =>
+                {
+                    b.HasOne("techtalks_forsa.Models.SwapRequest", "SwapRequest")
+                        .WithMany()
+                        .HasForeignKey("SwapRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SwapRequest");
                 });
 
             modelBuilder.Entity("techtalks_forsa.Models.SwapRequest", b =>
