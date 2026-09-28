@@ -4,7 +4,8 @@ using techtalks_forsa.Models;
 
 namespace techtalks_forsa.Data;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext(options)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    : IdentityDbContext(options)
 {
     public DbSet<Profile> Profiles { get; set; }
 
@@ -14,4 +15,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public DbSet<SwapRequest> SwapRequests { get; set; }
 
+    public DbSet<Message> Messages { get; set; }
+
+    public DbSet<Session> Sessions { get; set; }
 }

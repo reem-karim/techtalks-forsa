@@ -261,6 +261,35 @@ namespace techtalks_forsa.Data.Migrations
                     b.ToTable("Listings");
                 });
 
+            modelBuilder.Entity("techtalks_forsa.Models.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("ReceiverId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Messages");
+                });
+
             modelBuilder.Entity("techtalks_forsa.Models.MinorProfile", b =>
                 {
                     b.Property<int>("Id")
@@ -329,6 +358,33 @@ namespace techtalks_forsa.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Profiles");
+                });
+
+            modelBuilder.Entity("techtalks_forsa.Models.Session", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ScheduledAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SwapRequestId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SwapRequestId");
+
+                    b.ToTable("Sessions");
                 });
 
             modelBuilder.Entity("techtalks_forsa.Models.SwapRequest", b =>
@@ -428,6 +484,17 @@ namespace techtalks_forsa.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("GuardianProfile");
+                });
+
+            modelBuilder.Entity("techtalks_forsa.Models.Session", b =>
+                {
+                    b.HasOne("techtalks_forsa.Models.SwapRequest", "SwapRequest")
+                        .WithMany()
+                        .HasForeignKey("SwapRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SwapRequest");
                 });
 
             modelBuilder.Entity("techtalks_forsa.Models.SwapRequest", b =>
