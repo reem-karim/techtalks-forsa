@@ -13,7 +13,7 @@ namespace techtalks_forsa.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260926145337_AddMessage")]
-    partial class AddMessage
+    partial class AddMessage_20260926145337
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

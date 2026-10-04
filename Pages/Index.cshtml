@@ -5,6 +5,17 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Welcome to Forsa</h1>
+    <p class="lead">Swap skills, not money. Teach what you know, learn what you don't.</p>
+
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <a asp-page="/Browse/Index" class="btn btn-primary btn-lg me-2">Browse Skills</a>
+        <a asp-page="/Listings/Create" class="btn btn-outline-primary btn-lg">Post a Listing</a>
+    }
+    else
+    {
+        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary btn-lg me-2">Get Started</a>
+        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-primary btn-lg">Log In</a>
+    }
 </div>

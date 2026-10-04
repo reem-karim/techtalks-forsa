@@ -4,33 +4,32 @@ ASP.NET Core Track — TechTalks Summer Internship 2026
 
 ## Overview
 
-Forsa connects tutors with learners who need affordable help — whether 
-that's academic tutoring or a practical skill. Tutors build a profile 
-showing their background and post listings for what they teach; 
-learners browse, message a tutor directly, and book a session — 
-replacing informal word-of-mouth searching with something structured 
-and easy to trust.
+Forsa connects people who want to trade skills for free — post what you
+can teach, what you want to learn, browse other members' listings, and
+propose a swap. Once a swap is accepted, message each other and
+schedule a session.
 
-**Status:** Planning and setup phase.
+**Status:** Web MVP complete.
 
-## MVP Scope
+## Features
 
-**In scope:**
-- Tutor/learner profiles (background, bio, what they teach)
-- Listings & search (browse and filter by subject/level)
-- Private inbox messaging
-- Booking with status tracking (requested → confirmed → complete)
+- Register / login (ASP.NET Core Identity)
+- Profile with display name, education, bio, teach/learn summary
+- Guardian accounts with linked minor profiles
+- Skill listings (offer to teach / want to learn), with category + search
+- Browse & filter listings, suggested matches by category
+- Skill-swap requests (propose, accept, decline)
+- Private messaging between matched users
+- Session scheduling with status tracking (Requested → Confirmed → Completed)
 
-**Out of scope for now** (may be revisited later):
-- In-app payments
-- Real-time chat
-- Ratings, credential verification, AI features, mobile app
+**Out of scope for this version:** payments, real-time chat, ratings,
+credential verification, AI features, mobile app.
 
 ## Tech Stack
 
 - **Frontend/Backend:** ASP.NET Core Razor Pages
 - **Database:** SQL Server LocalDB (dev), EF Core Code-First
-- **Auth:** ASP.NET Identity
+- **Auth:** ASP.NET Core Identity
 
 ## Team
 
@@ -38,31 +37,36 @@ and easy to trust.
 - Rey Abou Rjeily
 - Johnny Azar
 
-Roles are assigned per feature as work is planned in Jira, not fixed 
-in advance — everyone contributes across the app over the course of 
-the project.
-
 ## Getting Started
 
-**Prerequisites:** .NET SDK 8.0+, Visual Studio (ASP.NET workload), 
-SQL Server LocalDB
+**Prerequisites:** .NET SDK 10, SQL Server LocalDB (Windows)
 
-```bash
+bash
 git clone https://github.com/reem-karim/techtalks-forsa.git
 cd techtalks-forsa
-# Setup/run commands added here once the initial project is committed
-```
+dotnet restore
+dotnet ef database update
+dotnet run
+
+
+Open the HTTPS URL shown in the terminal, register an account, and
+start exploring.
+
+## Database
+
+Run `dotnet ef database update` after pulling new migrations to keep
+your local LocalDB schema in sync.
 
 ## Contribution Workflow
 
-- One branch per task: `feature/<short-description>` (e.g. `feature/profile-page`)
-- Commit messages: short, present tense (e.g. "Add profile edit form")
-- No direct pushes to `main` — open a pull request, one teammate reviews before merge
-- Link the related Jira item in the branch name or PR when possible
+- One branch per Jira task: `feature/<JIRA-KEY>-<short-description>`
+- Never push directly to `main`
+- Open a Pull Request, get at least one teammate review, then merge
+- Link the Jira item in the PR description
 
 ## Notes
 
-- Profile information is self-reported by users, not independently verified.
-- No secrets or real user data are ever committed — use `.env.example` 
+- Profile information (education, bio) is self-reported, not
+  independently verified.
+- No secrets or real user data are ever committed — use `.env.example`
   with placeholders only, real values stay local.
-  
