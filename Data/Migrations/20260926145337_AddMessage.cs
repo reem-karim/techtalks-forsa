@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace techtalks_forsa.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddMessage : Migration
+    public partial class AddMessage_20260926145337 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
