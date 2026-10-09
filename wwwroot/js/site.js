@@ -1,4 +1,9 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿// Forsa site scripts
 
-// Write your JavaScript code.
+document.addEventListener('DOMContentLoaded', function () {
+    // Conversation page: start at the newest message.
+    var chat = document.getElementById('chat-window');
+    if (chat) {
+        chat.scrollTop = chat.scrollHeight;
+    }
+});

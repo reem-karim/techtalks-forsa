@@ -5,20 +5,39 @@
     ViewData["Title"] = Model.Listing?.Title ?? "Listing";
 }
 
-<h1>@Model.Listing?.Title</h1>
-<h6 class="text-muted">@Model.Listing?.Category — taught by @Model.OwnerDisplayName</h6>
+<a asp-page="/Browse/Index" class="back-link">&larr; Back to Browse</a>
 
-<p class="mt-3">@Model.Listing?.Description</p>
+<div class="detail-grid">
+    <article class="panel">
+        <span class="chip">@Model.Listing?.Category</span>
+        <h1 class="detail-title">@Model.Listing?.Title</h1>
+        <div class="detail-meta">
+            <span class="avatar avatar--sm" aria-hidden="true">@(Model.OwnerDisplayName.Length > 0 ? Model.OwnerDisplayName.Substring(0, 1).ToUpperInvariant() : "?")</span>
+            <span>Taught by <strong>@Model.OwnerDisplayName</strong></span>
+        </div>
 
-@if (!Model.IsOwnListing)
-{
-    <a asp-page="/SwapRequests/Propose" asp-route-listingId="@Model.Listing!.Id" class="btn btn-primary">
-        Propose a Skill Swap
-    </a>
-}
-else
-{
-    <p><em>This is your own listing.</em></p>
-}
+        @if (!string.IsNullOrWhiteSpace(Model.Listing?.Description))
+        {
+            <p class="detail-desc">@Model.Listing?.Description</p>
+        }
+        else
+        {
+            <p class="detail-desc text-muted">No description was added for this listing.</p>
+        }
+    </article>
 
-<p class="mt-3"><a asp-page="/Browse/Index">&larr; Back to Browse</a></p>
+    <aside class="cta-panel">
+        @if (!Model.IsOwnListing)
+        {
+            <h2>Interested in this skill?</h2>
+            <p>Send a swap request. You can offer one of your own skills in exchange, and add a short message.</p>
+            <a asp-page="/SwapRequests/Propose" asp-route-listingId="@Model.Listing!.Id" class="btn btn-primary w-100">Propose a skill swap</a>
+        }
+        else
+        {
+            <h2>This is your listing</h2>
+            <p>Other members can find it in Browse and send you swap requests.</p>
+            <a asp-page="/Listings/Edit" asp-route-id="@Model.Listing!.Id" class="btn btn-outline-primary w-100">Edit listing</a>
+        }
+    </aside>
+</div>

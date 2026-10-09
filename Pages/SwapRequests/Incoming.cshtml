@@ -5,48 +5,65 @@
     ViewData["Title"] = "Incoming Requests";
 }
 
-<h1>Incoming Requests</h1>
+<div class="page-header">
+    <div>
+        <h1>Swap requests</h1>
+        <p class="page-header__sub">People who want to learn from you. Accept to start a conversation, or decline politely.</p>
+    </div>
+</div>
+
+<partial name="_RequestsTabs" />
 
 @if (!Model.Requests.Any())
 {
-    <p>No one has requested a swap with you yet.</p>
+    <div class="empty">
+        <div class="empty__icon" aria-hidden="true">&#10022;</div>
+        <h2>No requests yet</h2>
+        <p>No one has requested a swap with you yet. A clear listing title and description help others find you.</p>
+        <a asp-page="/Listings/Index" class="btn btn-outline-primary">Review my listings</a>
+    </div>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>For your listing</th>
-                <th>They're offering</th>
-                <th>Message</th>
-                <th>Status</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var r in Model.Requests)
-            {
-                <tr>
-                    <td>@r.TargetListing?.Title</td>
-                    <td>@(r.OfferedListing?.Title ?? "—")</td>
-                    <td>@r.Message</td>
-                    <td>@r.Status</td>
-                    <td>
-                        @if (r.Status == techtalks_forsa.Models.SwapRequestStatus.Pending)
-                        {
-                            <form method="post" asp-page-handler="Respond" style="display:inline">
-                                <input type="hidden" name="id" value="@r.Id" />
-                                <button type="submit" name="decision" value="accept" class="btn btn-sm btn-success">Accept</button>
-                                <button type="submit" name="decision" value="decline" class="btn btn-sm btn-outline-danger">Decline</button>
-                            </form>
-                        }
-                        else
-                        {
-                            <a asp-page="/Messages/Thread" asp-route-userId="@r.RequesterUserId">Message</a>
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="request-list">
+        @foreach (var r in Model.Requests)
+        {
+            <article class="request-card">
+                <div class="request-card__head">
+                    <div>
+                        <p class="eyebrow">For your listing</p>
+                        <h2 class="request-card__title">@r.TargetListing?.Title</h2>
+                    </div>
+                    <span class="status status--@(r.Status.ToString().ToLowerInvariant())">@r.Status</span>
+                </div>
+
+                <dl class="request-card__meta">
+                    <dt>They're offering</dt>
+                    <dd>@(r.OfferedListing?.Title ?? "Nothing specific yet")</dd>
+                    <dt>Received</dt>
+                    <dd>@r.CreatedAt.ToLocalTime().ToString("g")</dd>
+                </dl>
+
+                @if (!string.IsNullOrWhiteSpace(r.Message))
+                {
+                    <blockquote class="request-card__message">@r.Message</blockquote>
+                }
+
+                <div class="request-card__actions">
+                    @if (r.Status == techtalks_forsa.Models.SwapRequestStatus.Pending)
+                    {
+                        <form method="post" asp-page-handler="Respond" class="d-flex flex-wrap gap-2">
+                            <input type="hidden" name="id" value="@r.Id" />
+                            <button type="submit" name="decision" value="accept" class="btn btn-success btn-sm">Accept</button>
+                            <button type="submit" name="decision" value="decline" class="btn btn-outline-danger btn-sm">Decline</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-page="/Messages/Thread" asp-route-userId="@r.RequesterUserId" class="btn btn-outline-primary btn-sm">Send a message</a>
+                    }
+                </div>
+            </article>
+        }
+    </div>
 }

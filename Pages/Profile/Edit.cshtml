@@ -5,85 +5,59 @@
     ViewData["Title"] = "Edit Profile";
 }
 
-<h1>Edit Profile</h1>
+<div class="page-header">
+    <div>
+        <h1>Edit profile</h1>
+        <p class="page-header__sub">This is what other members see. A friendly name and a short bio build trust.</p>
+    </div>
+</div>
 
-<form method="post">
-
+<form method="post" class="form-card">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <div class="mb-3">
+    <div class="mb-4">
         <label asp-for="Input.DisplayName" class="form-label"></label>
         <input asp-for="Input.DisplayName" class="form-control" placeholder="What should people see you as?" />
         <span asp-validation-for="Input.DisplayName" class="text-danger"></span>
     </div>
-    
-    <div class="mb-3">
+
+    <div class="mb-4">
         <label asp-for="Input.Education" class="form-label"></label>
-
-        <textarea asp-for="Input.Education"
-                  class="form-control"
-                  rows="3"></textarea>
-
-        <span asp-validation-for="Input.Education"
-              class="text-danger"></span>
-
-        <small class="form-text text-muted">
-            Education information is self-reported and has not been verified.
-        </small>
+        <textarea asp-for="Input.Education" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="Input.Education" class="text-danger"></span>
+        <div class="form-text">Education information is self-reported and has not been verified.</div>
     </div>
 
-    <div class="mb-3">
+    <div class="mb-4">
         <label asp-for="Input.Bio" class="form-label"></label>
-
-        <textarea asp-for="Input.Bio"
-                  class="form-control"
-                  rows="5"></textarea>
-
-        <span asp-validation-for="Input.Bio"
-              class="text-danger"></span>
+        <textarea asp-for="Input.Bio" class="form-control" rows="5"></textarea>
+        <span asp-validation-for="Input.Bio" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
+    <div class="mb-4">
         <label asp-for="Input.Teach" class="form-label"></label>
-
-        <textarea asp-for="Input.Teach"
-                  class="form-control"
-                  rows="3"
+        <textarea asp-for="Input.Teach" class="form-control" rows="3"
                   placeholder="Example: Mathematics, Python, English"></textarea>
-
-        <span asp-validation-for="Input.Teach"
-              class="text-danger"></span>
+        <span asp-validation-for="Input.Teach" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
+    <div class="mb-4">
         <label asp-for="Input.WantToLearn" class="form-label"></label>
-
-        <textarea asp-for="Input.WantToLearn"
-                  class="form-control"
-                  rows="3"
+        <textarea asp-for="Input.WantToLearn" class="form-control" rows="3"
                   placeholder="Example: French, Graphic Design"></textarea>
-
-        <span asp-validation-for="Input.WantToLearn"
-              class="text-danger"></span>
+        <span asp-validation-for="Input.WantToLearn" class="text-danger"></span>
     </div>
 
-    <div class="form-check mb-3">
-        <input asp-for="Input.IsGuardian"
-               class="form-check-input" />
-
-        <label asp-for="Input.IsGuardian"
-               class="form-check-label"></label>
-
-        <div class="form-text">
-            Select this only if you are acting as a guardian for a minor.
-        </div>
+    <div class="form-check mb-4">
+        <input asp-for="Input.IsGuardian" class="form-check-input" />
+        <label asp-for="Input.IsGuardian" class="form-check-label"></label>
+        <div class="form-text">Select this only if you are acting as a guardian for a minor.</div>
     </div>
 
-
-    <button type="submit" class="btn btn-primary">
-        Save Profile
-    </button>
-
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Save profile</button>
+        <a asp-page="/Profile/View" class="btn btn-ghost">Cancel</a>
+    </div>
 </form>
 
 @section Scripts {

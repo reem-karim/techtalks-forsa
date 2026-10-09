@@ -5,39 +5,47 @@
     ViewData["Title"] = "My Sent Requests";
 }
 
-<h1>My Sent Requests</h1>
+<div class="page-header">
+    <div>
+        <h1>Swap requests</h1>
+        <p class="page-header__sub">Requests you have sent to other members, and how they responded.</p>
+    </div>
+</div>
+
+<partial name="_RequestsTabs" />
 
 @if (!Model.Requests.Any())
 {
-    <p>You haven't sent any swap requests yet.</p>
+    <div class="empty">
+        <div class="empty__icon" aria-hidden="true">&#10022;</div>
+        <h2>You haven't sent any requests yet</h2>
+        <p>Find a skill you like in Browse, open it, and choose "Propose a skill swap".</p>
+        <a asp-page="/Browse/Index" class="btn btn-primary">Browse skills</a>
+    </div>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Listing</th>
-                <th>Status</th>
-                <th>Sent</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var r in Model.Requests)
-            {
-                <tr>
-                    <td>@r.TargetListing?.Title</td>
-                    <td>
-                        <span class="badge bg-@(r.Status == techtalks_forsa.Models.SwapRequestStatus.Accepted ? "success" : r.Status == techtalks_forsa.Models.SwapRequestStatus.Declined ? "danger" : "secondary")">
-                            @r.Status
-                        </span>
-                    </td>
-                    <td>@r.CreatedAt.ToLocalTime().ToString("g")</td>
-                    <td>
-                        <a asp-page="/Messages/Thread" asp-route-userId="@r.TargetListing!.OwnerUserId">Message</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="request-list">
+        @foreach (var r in Model.Requests)
+        {
+            <article class="request-card">
+                <div class="request-card__head">
+                    <div>
+                        <p class="eyebrow">You asked about</p>
+                        <h2 class="request-card__title">@r.TargetListing?.Title</h2>
+                    </div>
+                    <span class="status status--@(r.Status.ToString().ToLowerInvariant())">@r.Status</span>
+                </div>
+
+                <dl class="request-card__meta">
+                    <dt>Sent</dt>
+                    <dd>@r.CreatedAt.ToLocalTime().ToString("g")</dd>
+                </dl>
+
+                <div class="request-card__actions">
+                    <a asp-page="/Messages/Thread" asp-route-userId="@r.TargetListing!.OwnerUserId" class="btn btn-outline-primary btn-sm">Send a message</a>
+                </div>
+            </article>
+        }
+    </div>
 }

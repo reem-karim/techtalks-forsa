@@ -3,43 +3,77 @@
 
 @{
     ViewData["Title"] = "Browse Skills";
+    var isFiltering = !string.IsNullOrWhiteSpace(Model.Category) || !string.IsNullOrWhiteSpace(Model.Keyword);
 }
 
-<h1>Browse Skills</h1>
+<div class="page-header">
+    <div>
+        <h1>Browse skills</h1>
+        <p class="page-header__sub">Find someone who can teach what you want to learn. Pick a category, search by keyword, then open a listing to propose a swap.</p>
+    </div>
+</div>
 
-<form method="get" class="row g-3 mb-4">
-    <div class="col-auto">
-        <select name="Category" class="form-select" asp-items="Model.CategoryOptions">
+<form method="get" class="filter-bar" role="search">
+    <div class="filter-bar__field">
+        <label for="Category" class="form-label">Category</label>
+        <select asp-for="Category" class="form-select" asp-items="Model.CategoryOptions">
             <option value="">All categories</option>
         </select>
     </div>
-    <div class="col-auto">
-        <input type="text" name="Keyword" class="form-control" placeholder="Search keyword..." value="@Model.Keyword" />
+    <div class="filter-bar__field filter-bar__field--grow">
+        <label for="Keyword" class="form-label">Keyword</label>
+        <input asp-for="Keyword" type="search" class="form-control" placeholder="e.g. french, algebra, Photoshop" />
     </div>
-    <div class="col-auto">
-        <button type="submit" class="btn btn-primary">Filter</button>
+    <div class="filter-bar__actions">
+        <button type="submit" class="btn btn-primary">Search</button>
+        @if (isFiltering)
+        {
+            <a asp-page="/Browse/Index" class="btn btn-link">Clear</a>
+        }
     </div>
 </form>
 
 @if (!Model.Results.Any())
 {
-    <p>No listings found. Try a different filter.</p>
+    <div class="empty mt-4">
+        <div class="empty__icon" aria-hidden="true">&#10022;</div>
+        <h2>No listings found</h2>
+        <p>@(isFiltering ? "Nothing matches your search yet. Try a different keyword or clear the filters." : "No one has posted a skill to teach yet. Be the first!")</p>
+        @if (isFiltering)
+        {
+            <a asp-page="/Browse/Index" class="btn btn-outline-primary">Clear filters</a>
+        }
+        else
+        {
+            <a asp-page="/Listings/Create" class="btn btn-primary">Post a listing</a>
+        }
+    </div>
 }
 else
 {
-    <div class="row">
+    <p class="results-count">@Model.Results.Count @(Model.Results.Count == 1 ? "listing" : "listings") found</p>
+
+    <div class="row g-4">
         @foreach (var item in Model.Results)
         {
-            <div class="col-md-4 mb-3">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">@item.Listing.Title</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">@item.Listing.Category</h6>
-                        <p class="card-text">@item.Listing.Description</p>
-                        <p class="card-text"><small class="text-muted">Taught by @item.OwnerDisplayName</small></p>
-                        <a asp-page="/Browse/Details" asp-route-id="@item.Listing.Id" class="btn btn-outline-primary">View</a>
+            <div class="col-md-6 col-xl-4">
+                <article class="skill-card">
+                    <div class="skill-card__top">
+                        <span class="chip">@item.Listing.Category</span>
                     </div>
-                </div>
+                    <h2 class="skill-card__title">@item.Listing.Title</h2>
+                    @if (!string.IsNullOrWhiteSpace(item.Listing.Description))
+                    {
+                        <p class="skill-card__desc">@item.Listing.Description</p>
+                    }
+                    <div class="skill-card__footer">
+                        <span class="owner">
+                            <span class="avatar avatar--sm" aria-hidden="true">@(item.OwnerDisplayName.Length > 0 ? item.OwnerDisplayName.Substring(0, 1).ToUpperInvariant() : "?")</span>
+                            <span>Taught by @item.OwnerDisplayName</span>
+                        </span>
+                        <a asp-page="/Browse/Details" asp-route-id="@item.Listing.Id" class="btn btn-outline-primary btn-sm stretched-link" aria-label="View @item.Listing.Title">View</a>
+                    </div>
+                </article>
             </div>
         }
     </div>

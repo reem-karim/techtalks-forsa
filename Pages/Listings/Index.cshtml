@@ -5,45 +5,58 @@
     ViewData["Title"] = "My Listings";
 }
 
-<h1>My Listings</h1>
-
-<p>
-    <a asp-page="/Listings/Create" class="btn btn-primary">+ New Listing</a>
-</p>
+<div class="page-header">
+    <div>
+        <h1>My listings</h1>
+        <p class="page-header__sub">Skills you can teach and skills you want to learn. Post at least one of each to get suggested matches.</p>
+    </div>
+    <a asp-page="/Listings/Create" class="btn btn-primary">+ New listing</a>
+</div>
 
 @if (!Model.MyListings.Any())
 {
-    <p>You haven't posted any listings yet.</p>
+    <div class="empty">
+        <div class="empty__icon" aria-hidden="true">&#10022;</div>
+        <h2>You haven't posted any listings yet</h2>
+        <p>Start with something you can teach. Even a hobby counts.</p>
+        <a asp-page="/Listings/Create" class="btn btn-primary">Post your first listing</a>
+    </div>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Category</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var listing in Model.MyListings)
-            {
-                <tr>
-                    <td>@listing.Title</td>
-                    <td>@(listing.Type == techtalks_forsa.Models.ListingType.Offer ? "I can teach" : "I want to learn")</td>
-                    <td>@listing.Category</td>
-                    <td>
-                        <a asp-page="/Listings/Edit" asp-route-id="@listing.Id">Edit</a>
-                        |
-                        <form method="post" asp-page-handler="Delete" asp-route-id="@listing.Id"
-                              style="display:inline"
-                              onsubmit="return confirm('Delete this listing?');">
-                            <button type="submit" class="btn btn-link text-danger p-0">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">Title</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Category</th>
+                        <th scope="col"><span class="visually-hidden">Actions</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var listing in Model.MyListings)
+                    {
+                        var isOffer = listing.Type == techtalks_forsa.Models.ListingType.Offer;
+                        <tr>
+                            <td class="fw-semibold">@listing.Title</td>
+                            <td><span class="chip@(isOffer ? "" : " chip--learn")">@(isOffer ? "I can teach" : "I want to learn")</span></td>
+                            <td>@listing.Category</td>
+                            <td>
+                                <div class="row-actions">
+                                    <a asp-page="/Listings/Edit" asp-route-id="@listing.Id" class="btn btn-outline-primary btn-sm">Edit</a>
+                                    <form method="post" asp-page-handler="Delete" asp-route-id="@listing.Id"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Delete this listing?');">
+                                        <button type="submit" class="btn btn-link text-danger btn-sm">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 }

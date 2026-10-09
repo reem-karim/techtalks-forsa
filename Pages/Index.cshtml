@@ -1,21 +1,129 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Swap skills, not money";
+    var isSignedIn = User.Identity?.IsAuthenticated == true;
+    var categories = techtalks_forsa.Models.SkillCategories.All;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome to Forsa</h1>
-    <p class="lead">Swap skills, not money. Teach what you know, learn what you don't.</p>
+@if (isSignedIn)
+{
+    <section class="hero pb-0">
+        <p class="eyebrow">Welcome back</p>
+        <h1>What would you like to <em>learn</em> or <em>teach</em> today?</h1>
+        <p class="hero__lead">New here? Follow the four steps below. Already set up? Jump straight into browsing.</p>
+        <div class="hero__cta">
+            <a asp-page="/Browse/Index" class="btn btn-primary btn-lg">Browse skills</a>
+            <a asp-page="/Listings/Create" class="btn btn-outline-primary btn-lg">Post a listing</a>
+        </div>
+    </section>
 
-    @if (User.Identity != null && User.Identity.IsAuthenticated)
-    {
-        <a asp-page="/Browse/Index" class="btn btn-primary btn-lg me-2">Browse Skills</a>
-        <a asp-page="/Listings/Create" class="btn btn-outline-primary btn-lg">Post a Listing</a>
-    }
-    else
-    {
-        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary btn-lg me-2">Get Started</a>
-        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-primary btn-lg">Log In</a>
-    }
-</div>
+    <section class="section" aria-labelledby="start-title">
+        <h2 id="start-title" class="mb-4">Getting started</h2>
+        <div class="row g-4">
+            <div class="col-md-6 col-xl-3">
+                <div class="step">
+                    <span class="step__num">1</span>
+                    <h3>Complete your profile</h3>
+                    <p>Tell people who you are, what you can teach and what you want to learn.</p>
+                    <a asp-page="/Profile/Edit" class="btn btn-outline-primary btn-sm">Edit profile</a>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="step">
+                    <span class="step__num">2</span>
+                    <h3>Post a listing</h3>
+                    <p>Add one skill you can teach and one you want to learn. That is how we find your matches.</p>
+                    <a asp-page="/Listings/Create" class="btn btn-outline-primary btn-sm">New listing</a>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="step">
+                    <span class="step__num">3</span>
+                    <h3>Find a swap</h3>
+                    <p>Browse skills or check your suggested matches, then propose a swap.</p>
+                    <a asp-page="/Matches/Index" class="btn btn-outline-primary btn-sm">See my matches</a>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="step">
+                    <span class="step__num">4</span>
+                    <h3>Chat and meet</h3>
+                    <p>Once a request is accepted, message each other and agree on a time.</p>
+                    <a asp-page="/SwapRequests/Incoming" class="btn btn-outline-primary btn-sm">Check requests</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section pt-0" aria-labelledby="explore-title">
+        <h2 id="explore-title" class="mb-3">Explore by category</h2>
+        <div class="chip-cloud justify-content-start">
+            @foreach (var c in categories)
+            {
+                <a class="chip-link" asp-page="/Browse/Index" asp-route-Category="@c">@c</a>
+            }
+        </div>
+    </section>
+}
+else
+{
+    <section class="hero">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <p class="eyebrow">Free skill exchange</p>
+                <h1>Swap skills, <em>not money.</em></h1>
+                <p class="hero__lead">Teach what you know, learn what you don't. Forsa connects people who want to trade lessons, with no payments and no pressure.</p>
+                <div class="hero__cta">
+                    <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary btn-lg">Get started, it's free</a>
+                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-primary btn-lg">Log in</a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block" aria-hidden="true">
+                <div class="hero-art">
+                    <div class="mini mini--1"><span class="chip">I can teach</span><p>Beginner guitar</p><small>Arts &amp; Crafts</small></div>
+                    <div class="mini mini--2"><span class="chip chip--learn">I want to learn</span><p>Intro to Python</p><small>Technology</small></div>
+                    <div class="mini mini--3"><span class="chip">I can teach</span><p>Conversational French</p><small>Languages</small></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="how-it-works" aria-labelledby="how-title">
+        <h2 id="how-title" class="section__title">How Forsa works</h2>
+        <p class="section__sub">Four simple steps from "I wish I could do that" to your first lesson.</p>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="step"><span class="step__num">1</span><h3>Create your profile</h3><p>Sign up and tell the community a little about you.</p></div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="step"><span class="step__num">2</span><h3>Post what you offer and want</h3><p>List a skill you can teach and one you would love to learn.</p></div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="step"><span class="step__num">3</span><h3>Propose a swap</h3><p>Browse listings or use suggested matches and send a request.</p></div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="step"><span class="step__num">4</span><h3>Message and learn</h3><p>When a request is accepted, chat and arrange your session.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section pt-0" aria-labelledby="cat-title">
+        <h2 id="cat-title" class="section__title">Skills people swap</h2>
+        <p class="section__sub">From school subjects to cooking and coding.</p>
+        <div class="chip-cloud">
+            @foreach (var c in categories)
+            {
+                <a class="chip-link" asp-area="Identity" asp-page="/Account/Register">@c</a>
+            }
+        </div>
+    </section>
+
+    <section class="section pt-0">
+        <div class="cta-band">
+            <h2>Ready to trade your first skill?</h2>
+            <p>Create a free account in under a minute.</p>
+            <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-accent btn-lg">Join Forsa</a>
+        </div>
+    </section>
+}
