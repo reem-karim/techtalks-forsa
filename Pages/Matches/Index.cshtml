@@ -5,36 +5,46 @@
     ViewData["Title"] = "Suggested Matches";
 }
 
-<h1>Suggested Matches</h1>
+<div class="page-header">
+    <div>
+        <h1>Suggested matches</h1>
+        <p class="page-header__sub">For every skill you want to learn, here are members who offer something in the same category.</p>
+    </div>
+</div>
 
 @if (!Model.Groups.Any())
 {
-    <p>
-        Add a "I want to learn" listing first, and we'll suggest people who can teach it.
-        <a asp-page="/Listings/Create">Add a listing</a>
-    </p>
+    <div class="empty">
+        <div class="empty__icon" aria-hidden="true">&#10022;</div>
+        <h2>No matches yet</h2>
+        <p>Add an "I want to learn" listing first, and we'll suggest people who can teach it.</p>
+        <a asp-page="/Listings/Create" class="btn btn-primary">Add a listing</a>
+    </div>
 }
 else
 {
     @foreach (var group in Model.Groups)
     {
-        <h4 class="mt-4">Because you want to learn: @group.LearnListing.Title</h4>
+        <section class="match-group">
+            <h2 class="match-group__title">Because you want to learn: <span>@group.LearnListing.Title</span></h2>
 
-        @if (!group.MatchingOffers.Any())
-        {
-            <p>No matches yet in this category.</p>
-        }
-        else
-        {
-            <ul class="list-group mb-3">
+            @if (!group.MatchingOffers.Any())
+            {
+                <p class="text-muted">No matches yet in this category. Check back soon, or <a asp-page="/Browse/Index">browse all skills</a>.</p>
+            }
+            else
+            {
                 @foreach (var offer in group.MatchingOffers)
                 {
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        @offer.Title
-                        <a asp-page="/Browse/Details" asp-route-id="@offer.Id" class="btn btn-sm btn-outline-primary">View</a>
-                    </li>
+                    <div class="match-row">
+                        <div>
+                            <div class="match-row__title">@offer.Title</div>
+                            <span class="chip">@offer.Category</span>
+                        </div>
+                        <a asp-page="/Browse/Details" asp-route-id="@offer.Id" class="btn btn-outline-primary btn-sm">View</a>
+                    </div>
                 }
-            </ul>
-        }
+            }
+        </section>
     }
 }

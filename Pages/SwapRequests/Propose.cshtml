@@ -5,36 +5,34 @@
     ViewData["Title"] = "Propose a Swap";
 }
 
-<h1>Propose a Swap</h1>
-<h6 class="text-muted">For: @Model.TargetListing?.Title</h6>
+<a asp-page="/Browse/Index" class="back-link">&larr; Back to Browse</a>
 
-<form method="post" class="mt-3">
+<div class="page-header">
+    <div>
+        <h1>Propose a swap</h1>
+        <p class="page-header__sub">You're asking about: <strong>@Model.TargetListing?.Title</strong></p>
+    </div>
+</div>
+
+<form method="post" class="form-card">
     <input type="hidden" asp-for="ListingId" />
 
-    <div class="mb-3">
-        <label class="form-label">
-            What will you offer in exchange? (optional)
-        </label>
-
-        <select asp-for="Input.OfferedListingId"
-                class="form-select"
-                asp-items="Model.MyOfferOptions">
+    <div class="mb-4">
+        <label asp-for="Input.OfferedListingId" class="form-label">What will you offer in exchange? <span class="text-muted fw-normal">(optional)</span></label>
+        <select asp-for="Input.OfferedListingId" class="form-select" asp-items="Model.MyOfferOptions">
             <option value="">-- Just ask, no offer yet --</option>
         </select>
+        <div class="form-text">Pick one of your own "I can teach" listings. You can also leave this empty.</div>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="Input.Message" class="form-label">
-            Message
-        </label>
-
-        <textarea asp-for="Input.Message"
-                  class="form-control"
-                  rows="4"
+    <div class="mb-4">
+        <label asp-for="Input.Message" class="form-label">Message</label>
+        <textarea asp-for="Input.Message" class="form-control" rows="5"
                   placeholder="Introduce yourself and explain what you're proposing..."></textarea>
     </div>
 
-    <button type="submit" class="btn btn-primary">
-        Send Request
-    </button>
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Send request</button>
+        <a asp-page="/Browse/Index" class="btn btn-ghost">Cancel</a>
+    </div>
 </form>

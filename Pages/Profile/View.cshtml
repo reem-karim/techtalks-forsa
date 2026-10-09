@@ -3,71 +3,74 @@
 
 @{
     ViewData["Title"] = "My Profile";
+    var displayName = string.IsNullOrWhiteSpace(Model.Profile?.DisplayName) ? "My profile" : Model.Profile!.DisplayName!;
 }
 
-<h1>My Profile</h1>
-
-<div class="card">
-    <div class="card-body">
-
-        <h2>Education</h2>
-
-        <p>
-            @Model.Profile?.Education
-        </p>
-
-        <p class="text-muted">
-            Education information is self-reported and has not been verified.
-        </p>
-
-        <hr />
-
-        <h2>About Me</h2>
-
-        <p>
-            @Model.Profile?.Bio
-        </p>
-
-        <hr />
-
-        <h2>I Teach</h2>
-
-        <p>
-            @Model.Profile?.Teach
-        </p>
-
-        <hr />
-
-        <h2>I Want to Learn</h2>
-
-        <p>
-            @Model.Profile?.WantToLearn
-        </p>
-
-        <hr />
-
-              @if (Model.Profile?.IsGuardian == true)
-        {
-            <hr />
-
-            <h2>Guardian</h2>
-
-            <p>
-                You are registered as a guardian.
-            </p>
-
-            <a asp-page="/Profile/Minor/Create"
-               class="btn btn-primary">
-                Add Minor Profile
-            </a>
-        }
-
-        <hr />
-
-
-    <a asp-page="/Profile/Edit" class="btn btn-primary">
-            Edit Profile
-        </a>
-
+<div class="profile-head">
+    <span class="avatar avatar--lg" aria-hidden="true">@displayName.Substring(0, 1).ToUpperInvariant()</span>
+    <div>
+        <p class="eyebrow mb-1">My profile</p>
+        <h1>@displayName</h1>
     </div>
+    <a asp-page="/Profile/Edit" class="btn btn-primary">Edit profile</a>
+</div>
+
+<div class="profile-grid">
+    <section class="panel">
+        <h2>I teach</h2>
+        @if (string.IsNullOrWhiteSpace(Model.Profile?.Teach))
+        {
+            <p class="not-set">Not added yet</p>
+        }
+        else
+        {
+            <p>@Model.Profile?.Teach</p>
+        }
+    </section>
+
+    <section class="panel">
+        <h2>I want to learn</h2>
+        @if (string.IsNullOrWhiteSpace(Model.Profile?.WantToLearn))
+        {
+            <p class="not-set">Not added yet</p>
+        }
+        else
+        {
+            <p>@Model.Profile?.WantToLearn</p>
+        }
+    </section>
+
+    <section class="panel span-2">
+        <h2>About me</h2>
+        @if (string.IsNullOrWhiteSpace(Model.Profile?.Bio))
+        {
+            <p class="not-set">Not added yet</p>
+        }
+        else
+        {
+            <p>@Model.Profile?.Bio</p>
+        }
+    </section>
+
+    <section class="panel span-2">
+        <h2>Education</h2>
+        @if (string.IsNullOrWhiteSpace(Model.Profile?.Education))
+        {
+            <p class="not-set">Not added yet</p>
+        }
+        else
+        {
+            <p>@Model.Profile?.Education</p>
+        }
+        <p class="text-muted small mt-2">Education information is self-reported and has not been verified.</p>
+    </section>
+
+    @if (Model.Profile?.IsGuardian == true)
+    {
+        <section class="panel span-2">
+            <h2>Guardian</h2>
+            <p>You are registered as a guardian. You can add a profile for a minor you look after.</p>
+            <a asp-page="/Profile/Minor/Create" class="btn btn-outline-primary">Add minor profile</a>
+        </section>
+    }
 </div>

@@ -3,31 +3,22 @@
 
 @{
     ViewData["Title"] = "Minor Profile";
+    var minorName = Model.MinorProfile?.Name ?? "";
 }
 
-<h1>Minor Profile</h1>
+<a asp-page="/Profile/View" class="back-link">&larr; Back to my profile</a>
 
-<div class="card">
-    <div class="card-body">
-
-        <h2>@Model.MinorProfile?.Name</h2>
-
-        <p>
-            <strong>Age:</strong>
-            @Model.MinorProfile?.Age
-        </p>
-
-        <p>
-            <strong>Grade:</strong>
-            @Model.MinorProfile?.Grade
-        </p>
-
-        <hr />
-
-        <p class="text-muted">
-            This is a guardian-managed minor profile.
-            The minor does not have a login account.
-        </p>
-
+<div class="profile-head">
+    <span class="avatar avatar--lg" aria-hidden="true">@(minorName.Length > 0 ? minorName.Substring(0, 1).ToUpperInvariant() : "?")</span>
+    <div>
+        <p class="eyebrow mb-1">Minor profile</p>
+        <h1>@Model.MinorProfile?.Name</h1>
     </div>
 </div>
+
+<section class="panel" style="max-width: 720px;">
+    <p><strong>Age:</strong> @Model.MinorProfile?.Age</p>
+    <p><strong>Grade:</strong> @Model.MinorProfile?.Grade</p>
+    <hr />
+    <p class="text-muted small mb-0">This is a guardian-managed minor profile. The minor does not have a login account.</p>
+</section>

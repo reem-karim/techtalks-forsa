@@ -1,0 +1,8 @@
+@{
+    var current = (ViewContext.RouteData.Values["page"] as string) ?? "";
+    var onReceived = current.EndsWith("/Incoming", StringComparison.OrdinalIgnoreCase);
+}
+<nav class="tabs" aria-label="Swap request views">
+    <a class="tab@(onReceived ? " active" : "")" aria-current="@(onReceived ? "page" : null)" asp-page="/SwapRequests/Incoming">Received</a>
+    <a class="tab@(!onReceived ? " active" : "")" aria-current="@(!onReceived ? "page" : null)" asp-page="/SwapRequests/Sent">Sent</a>
+</nav>

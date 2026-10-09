@@ -5,26 +5,33 @@
     ViewData["Title"] = "Conversation with " + Model.OtherDisplayName;
 }
 
-<h1>Conversation with @Model.OtherDisplayName</h1>
+<a asp-page="/Messages/Inbox" class="back-link">&larr; All messages</a>
 
-<div class="border rounded p-3 mb-3" style="max-height: 400px; overflow-y: auto;">
+<div class="thread-head">
+    <span class="avatar avatar--lg" aria-hidden="true">@(Model.OtherDisplayName.Length > 0 ? Model.OtherDisplayName.Substring(0, 1).ToUpperInvariant() : "?")</span>
+    <h1>@Model.OtherDisplayName</h1>
+</div>
+
+<div id="chat-window" class="chat" role="log" aria-live="polite" aria-label="Conversation with @Model.OtherDisplayName">
     @foreach (var m in Model.Messages)
     {
-        <div class="mb-2">
-            <strong>@(m.SenderId == Model.UserId ? Model.OtherDisplayName : "You"):</strong>
-            @m.Content
-            <div><small class="text-muted">@m.SentAt.ToLocalTime().ToString("g")</small></div>
+        var isFromOther = m.SenderId == Model.UserId;
+        <div class="bubble @(isFromOther ? "bubble--them" : "bubble--me")">
+            <span class="visually-hidden">@(isFromOther ? Model.OtherDisplayName : "You"):</span>
+            <span class="bubble__text">@m.Content</span>
+            <span class="bubble__time">@m.SentAt.ToLocalTime().ToString("g")</span>
         </div>
     }
     @if (!Model.Messages.Any())
     {
-        <p class="text-muted">No messages yet. Say hello!</p>
+        <p class="chat__empty">No messages yet. Say hello!</p>
     }
 </div>
 
-<form method="post">
+<form method="post" class="composer">
     <input type="hidden" asp-for="UserId" />
-    <div class="mb-3">
+    <div class="flex-grow-1">
+        <label asp-for="Input.Content" class="visually-hidden">Message</label>
         <textarea asp-for="Input.Content" class="form-control" rows="2" placeholder="Type a message..."></textarea>
         <span asp-validation-for="Input.Content" class="text-danger"></span>
     </div>

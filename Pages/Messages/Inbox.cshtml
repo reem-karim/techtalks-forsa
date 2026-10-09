@@ -5,24 +5,37 @@
     ViewData["Title"] = "Messages";
 }
 
-<h1>Messages</h1>
+<div class="page-header">
+    <div>
+        <h1>Messages</h1>
+        <p class="page-header__sub">Your conversations with other members.</p>
+    </div>
+</div>
 
 @if (!Model.Conversations.Any())
 {
-    <p>No conversations yet. Start one from a listing or swap request.</p>
+    <div class="empty">
+        <div class="empty__icon" aria-hidden="true">&#10022;</div>
+        <h2>No conversations yet</h2>
+        <p>Messages start from swap requests. Browse skills, propose a swap, and once it is accepted you can chat here.</p>
+        <a asp-page="/Browse/Index" class="btn btn-primary">Browse skills</a>
+    </div>
 }
 else
 {
-    <ul class="list-group">
+    <div class="convo-list">
         @foreach (var c in Model.Conversations)
         {
-            <a asp-page="/Messages/Thread" asp-route-userId="@c.OtherUserId" class="list-group-item list-group-item-action">
-                <div class="d-flex justify-content-between">
-                    <strong>@c.OtherDisplayName</strong>
-                    <small class="text-muted">@c.LastSentAt.ToLocalTime().ToString("g")</small>
-                </div>
-                <div class="text-truncate">@c.LastMessage</div>
+            <a asp-page="/Messages/Thread" asp-route-userId="@c.OtherUserId" class="convo">
+                <span class="avatar" aria-hidden="true">@(c.OtherDisplayName.Length > 0 ? c.OtherDisplayName.Substring(0, 1).ToUpperInvariant() : "?")</span>
+                <span class="convo__body">
+                    <span class="convo__top">
+                        <strong>@c.OtherDisplayName</strong>
+                        <span class="convo__time">@c.LastSentAt.ToLocalTime().ToString("g")</span>
+                    </span>
+                    <span class="convo__last d-block">@c.LastMessage</span>
+                </span>
             </a>
         }
-    </ul>
+    </div>
 }

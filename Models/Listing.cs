@@ -31,3 +31,6 @@ public class Listing
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
+
+/*The idea: One Listing covers both "I can teach this" and "I want to learn this"
+same shape, different Type. That's what lets Epic 3's matching logic just compare Type and Category.*/
