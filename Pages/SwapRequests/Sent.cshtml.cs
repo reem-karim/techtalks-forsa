@@ -34,4 +34,4 @@ namespace techtalks_forsa.Pages.SwapRequests
                 .ToListAsync();
         }
     }
-}
+}

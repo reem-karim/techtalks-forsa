@@ -13,7 +13,7 @@ namespace techtalks_forsa.Models
         [StringLength(100)]
         public string Name { get; set; } = string.Empty;
 
-        [Range(5, 18)]
+        [Range(5, 17, ErrorMessage = "Age must be between 5 and 17.")]
         public int Age { get; set; }
 
         [StringLength(50)]
@@ -21,4 +21,4 @@ namespace techtalks_forsa.Models
 
         public Profile? GuardianProfile { get; set; }
     }
-}
+}

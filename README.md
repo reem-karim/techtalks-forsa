@@ -20,7 +20,7 @@ schedule a session.
 - Browse & filter listings, suggested matches by category
 - Skill-swap requests (propose, accept, decline)
 - Private messaging between matched users
-- Session scheduling with status tracking (Requested → Confirmed → Completed)
+- Session scheduling with status tracking (Requested → Confirmed → Completed) — *planned, not implemented yet.* The `Sessions` table exists (one session per swap request); the pages are still to be built.
 
 **Out of scope for this version:** payments, real-time chat, ratings,
 credential verification, AI features, mobile app.
@@ -69,4 +69,4 @@ your local LocalDB schema in sync.
 - Profile information (education, bio) is self-reported, not
   independently verified.
 - No secrets or real user data are ever committed — use `.env.example`
-  with placeholders only, real values stay local.
+  with placeholders only, real values stay local.

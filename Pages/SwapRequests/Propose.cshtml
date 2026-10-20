@@ -15,6 +15,7 @@
 </div>
 
 <form method="post" class="form-card">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
     <input type="hidden" asp-for="ListingId" />
 
     <div class="mb-4">
@@ -29,6 +30,7 @@
         <label asp-for="Input.Message" class="form-label">Message</label>
         <textarea asp-for="Input.Message" class="form-control" rows="5"
                   placeholder="Introduce yourself and explain what you're proposing..."></textarea>
+        <span asp-validation-for="Input.Message" class="text-danger"></span>
     </div>
 
     <div class="d-flex gap-2">
@@ -36,3 +38,7 @@
         <a asp-page="/Browse/Index" class="btn btn-ghost">Cancel</a>
     </div>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

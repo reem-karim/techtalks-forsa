@@ -16,6 +16,7 @@
 
 <form method="post" class="form-card">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Input.RowVersion" />
 
     <div class="mb-4">
         <label asp-for="Input.Type" class="form-label">I want to&hellip;</label>
@@ -23,6 +24,7 @@
             <option value="@techtalks_forsa.Models.ListingType.Offer">Teach this (I can teach it)</option>
             <option value="@techtalks_forsa.Models.ListingType.Learn">Learn this (I want to learn it)</option>
         </select>
+        <span asp-validation-for="Input.Type" class="text-danger"></span>
     </div>
 
     <div class="mb-4">
@@ -34,6 +36,7 @@
     <div class="mb-4">
         <label asp-for="Input.Category" class="form-label">Category</label>
         <select asp-for="Input.Category" class="form-select" asp-items="Model.CategoryOptions"></select>
+        <span asp-validation-for="Input.Category" class="text-danger"></span>
     </div>
 
     <div class="mb-4">

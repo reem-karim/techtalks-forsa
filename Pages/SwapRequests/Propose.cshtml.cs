@@ -13,6 +13,9 @@ namespace techtalks_forsa.Pages.SwapRequests
     [Authorize]
     public class ProposeModel : PageModel
     {
+        // B1: after a request was declined the requester has to wait before asking for the same listing again.
+        private static readonly TimeSpan DeclineCooldown = TimeSpan.FromDays(7);
+
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
 
@@ -42,31 +45,58 @@ namespace techtalks_forsa.Pages.SwapRequests
 
         public async Task<IActionResult> OnGetAsync()
         {
-            TargetListing = await _context.Listings.FirstOrDefaultAsync(l => l.Id == ListingId);
+            // B3b: only "Offer" listings can be the target of a swap request.
+            TargetListing = await _context.Listings
+                .FirstOrDefaultAsync(l => l.Id == ListingId && l.Type == ListingType.Offer);
             if (TargetListing == null) return NotFound();
 
             var userId = _userManager.GetUserId(User);
             if (TargetListing.OwnerUserId == userId) return Forbid();
 
-            var myOffers = await _context.Listings
-                .Where(l => l.OwnerUserId == userId && l.Type == ListingType.Offer)
-                .ToListAsync();
-
-            MyOfferOptions = myOffers
-                .Select(l => new SelectListItem(l.Title, l.Id.ToString()))
-                .ToList();
+            await LoadOptionsAsync(userId!);
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            TargetListing = await _context.Listings.FirstOrDefaultAsync(l => l.Id == ListingId);
+            TargetListing = await _context.Listings
+                .FirstOrDefaultAsync(l => l.Id == ListingId && l.Type == ListingType.Offer);
             if (TargetListing == null) return NotFound();
 
             var userId = _userManager.GetUserId(User);
             if (userId == null) return Challenge();
             if (TargetListing.OwnerUserId == userId) return Forbid();
+
+            // B3: enforce [StringLength(500)] instead of letting SQL throw a truncation error.
+            if (!ModelState.IsValid)
+            {
+                await LoadOptionsAsync(userId);
+                return Page();
+            }
+
+            // B2: the offered listing must be one of MY "Offer" listings (or empty).
+            if (Input.OfferedListingId != null)
+            {
+                var offeredOk = await _context.Listings.AnyAsync(l =>
+                    l.Id == Input.OfferedListingId &&
+                    l.OwnerUserId == userId &&
+                    l.Type == ListingType.Offer);
+
+                if (!offeredOk)
+                {
+                    ModelState.AddModelError(string.Empty, "Please choose one of your own \"I can teach\" listings, or leave it empty.");
+                    await LoadOptionsAsync(userId);
+                    return Page();
+                }
+            }
+
+            // A2 / B1: one open request per requester + listing, cooldown after a decline.
+            var blocker = await FindBlockingRequestAsync(userId);
+            if (blocker != null)
+            {
+                return await RejectAsync(userId, blocker);
+            }
 
             var swapRequest = new SwapRequest
             {
@@ -78,9 +108,80 @@ namespace techtalks_forsa.Pages.SwapRequests
             };
 
             _context.SwapRequests.Add(swapRequest);
-            await _context.SaveChangesAsync();
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                // A double-click / second tab won the race (unique index), or the listing was deleted meanwhile (A7).
+                _context.ChangeTracker.Clear();
+
+                var targetStillThere = await _context.Listings.AnyAsync(l => l.Id == ListingId);
+                if (!targetStillThere)
+                {
+                    return NotFound();
+                }
+
+                var existing = await FindBlockingRequestAsync(userId);
+                if (existing != null)
+                {
+                    return await RejectAsync(userId, existing);
+                }
+
+                throw;
+            }
 
             return RedirectToPage("/SwapRequests/Sent");
+        }
+
+        private async Task<SwapRequest?> FindBlockingRequestAsync(string userId)
+        {
+            var cutoff = DateTime.UtcNow - DeclineCooldown;
+
+            return await _context.SwapRequests
+                .AsNoTracking()
+                .Where(r => r.RequesterUserId == userId &&
+                            r.TargetListingId == ListingId &&
+                            (r.Status != SwapRequestStatus.Declined ||
+                             (r.RespondedAt ?? r.CreatedAt) > cutoff))
+                .OrderByDescending(r => r.CreatedAt)
+                .FirstOrDefaultAsync();
+        }
+
+        private async Task<IActionResult> RejectAsync(string userId, SwapRequest blocker)
+        {
+            // A double-click that already created the request should simply land on "Sent", not on an error.
+            if (blocker.Status == SwapRequestStatus.Pending &&
+                blocker.CreatedAt > DateTime.UtcNow.AddSeconds(-30) &&
+                blocker.OfferedListingId == Input.OfferedListingId &&
+                blocker.Message == Input.Message)
+            {
+                return RedirectToPage("/SwapRequests/Sent");
+            }
+
+            ModelState.AddModelError(string.Empty, blocker.Status switch
+            {
+                SwapRequestStatus.Pending => "You already have a pending request for this listing. Wait for the owner to answer it.",
+                SwapRequestStatus.Accepted => "Your request for this listing was already accepted. You can message the owner from Requests.",
+                _ => "This request was declined recently. Please wait a few days before asking for the same listing again."
+            });
+
+            await LoadOptionsAsync(userId);
+            return Page();
+        }
+
+        private async Task LoadOptionsAsync(string userId)
+        {
+            var myOffers = await _context.Listings
+                .Where(l => l.OwnerUserId == userId && l.Type == ListingType.Offer)
+                .OrderBy(l => l.Title)
+                .ToListAsync();
+
+            MyOfferOptions = myOffers
+                .Select(l => new SelectListItem(l.Title, l.Id.ToString()))
+                .ToList();
         }
     }
 }

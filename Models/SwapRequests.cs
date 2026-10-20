@@ -14,6 +14,7 @@ public class SwapRequest
     public int Id { get; set; }
 
     [Required]
+    [StringLength(450)]
     public string RequesterUserId { get; set; } = string.Empty;
 
     [Required]
@@ -29,4 +30,11 @@ public class SwapRequest
     public SwapRequestStatus Status { get; set; } = SwapRequestStatus.Pending;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-}
+
+    // Set when the owner accepts/declines. Used for the "re-request after decline" cooldown.
+    public DateTime? RespondedAt { get; set; }
+
+    // Concurrency token: a second simultaneous Accept/Decline fails instead of overwriting the first.
+    [Timestamp]
+    public byte[] RowVersion { get; set; } = Array.Empty<byte>();
+}

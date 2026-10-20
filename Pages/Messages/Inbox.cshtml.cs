@@ -34,8 +34,9 @@ namespace techtalks_forsa.Pages.Messages
             var userId = _userManager.GetUserId(User);
 
             var myMessages = await _context.Messages
-                .Where(m => m.SenderId == userId || m.ReceiverId == userId)
+                .Where(m => (m.SenderId == userId || m.ReceiverId == userId) && m.SenderId != m.ReceiverId)
                 .OrderByDescending(m => m.SentAt)
+                .ThenByDescending(m => m.Id)
                 .ToListAsync();
 
             var grouped = myMessages
@@ -64,4 +65,4 @@ namespace techtalks_forsa.Pages.Messages
             .ToList();
         }
     }
-}
+}

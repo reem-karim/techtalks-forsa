@@ -13,6 +13,11 @@
     <a asp-page="/Listings/Create" class="btn btn-primary">+ New listing</a>
 </div>
 
+@if (TempData["StatusMessage"] is string statusMessage)
+{
+    <div class="alert alert-info" role="status">@statusMessage</div>
+}
+
 @if (!Model.MyListings.Any())
 {
     <div class="empty">
@@ -39,6 +44,10 @@ else
                     @foreach (var listing in Model.MyListings)
                     {
                         var isOffer = listing.Type == techtalks_forsa.Models.ListingType.Offer;
+                        var requestCount = Model.RequestCounts.TryGetValue(listing.Id, out var rc) ? rc : 0;
+                        var confirmText = requestCount > 0
+                            ? $"Delete this listing? Its {requestCount} swap request(s) will be deleted too."
+                            : "Delete this listing?";
                         <tr>
                             <td class="fw-semibold">@listing.Title</td>
                             <td><span class="chip@(isOffer ? "" : " chip--learn")">@(isOffer ? "I can teach" : "I want to learn")</span></td>
@@ -48,7 +57,8 @@ else
                                     <a asp-page="/Listings/Edit" asp-route-id="@listing.Id" class="btn btn-outline-primary btn-sm">Edit</a>
                                     <form method="post" asp-page-handler="Delete" asp-route-id="@listing.Id"
                                           class="d-inline"
-                                          onsubmit="return confirm('Delete this listing?');">
+                                          data-confirm="@confirmText"
+                                          onsubmit="return confirm(this.dataset.confirm);">
                                         <button type="submit" class="btn btn-link text-danger btn-sm">Delete</button>
                                     </form>
                                 </div>

@@ -28,15 +28,23 @@
     }
 </div>
 
-<form method="post" class="composer">
-    <input type="hidden" asp-for="UserId" />
-    <div class="flex-grow-1">
-        <label asp-for="Input.Content" class="visually-hidden">Message</label>
-        <textarea asp-for="Input.Content" class="form-control" rows="2" placeholder="Type a message..."></textarea>
-        <span asp-validation-for="Input.Content" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Send</button>
-</form>
+@if (Model.CanSend)
+{
+    <form method="post" class="composer">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="UserId" />
+        <div class="flex-grow-1">
+            <label asp-for="Input.Content" class="visually-hidden">Message</label>
+            <textarea asp-for="Input.Content" class="form-control" rows="2" placeholder="Type a message..."></textarea>
+            <span asp-validation-for="Input.Content" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+}
+else
+{
+    <p class="text-muted small mt-3">You can send messages once a swap request between you has been accepted.</p>
+}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace techtalks_forsa.Pages.Listings
@@ -40,15 +41,26 @@ namespace techtalks_forsa.Pages.Listings
             [Display(Name = "Category")]
             public string Category { get; set; } = string.Empty;
 
+            // Nullable so that [Required] really fires when the field is missing (a non-nullable enum silently becomes Offer).
             [Required]
             [Display(Name = "Listing Type")]
-            public ListingType Type { get; set; }
+            public ListingType? Type { get; set; }
         }
 
         public void OnGet() { }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            // B6: category must be one of the known categories, type must be a real enum value.
+            if (!string.IsNullOrEmpty(Input.Category) && !SkillCategories.All.Contains(Input.Category))
+            {
+                ModelState.AddModelError("Input.Category", "Please choose a category from the list.");
+            }
+            if (Input.Type != null && !Enum.IsDefined(Input.Type.Value))
+            {
+                ModelState.AddModelError("Input.Type", "Please choose a valid listing type.");
+            }
+
             if (!ModelState.IsValid)
             {
                 return Page();
@@ -60,13 +72,36 @@ namespace techtalks_forsa.Pages.Listings
                 return Challenge();
             }
 
+            var title = Input.Title.Trim();
+            var type = Input.Type!.Value;
+
+            // A4: no identical listing twice. A listing created a moment ago is a double-click: just go on.
+            var duplicate = await _context.Listings
+                .Where(l => l.OwnerUserId == userId &&
+                            l.Title == title &&
+                            l.Category == Input.Category &&
+                            l.Type == type)
+                .OrderByDescending(l => l.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            if (duplicate != null)
+            {
+                if (duplicate.CreatedAt > DateTime.UtcNow.AddSeconds(-30))
+                {
+                    return RedirectToPage("/Listings/Index");
+                }
+
+                ModelState.AddModelError(string.Empty, "You already have a listing with the same title, category and type.");
+                return Page();
+            }
+
             var listing = new Listing
             {
                 OwnerUserId = userId,
-                Title = Input.Title,
+                Title = title,
                 Description = Input.Description,
                 Category = Input.Category,
-                Type = Input.Type
+                Type = type
             };
 
             _context.Listings.Add(listing);
@@ -75,4 +110,4 @@ namespace techtalks_forsa.Pages.Listings
             return RedirectToPage("/Listings/Index");
         }
     }
-}
+}
