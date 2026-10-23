@@ -13,6 +13,7 @@ public class Listing
     public int Id { get; set; }
 
     [Required]
+    [StringLength(450)]
     public string OwnerUserId { get; set; } = string.Empty;
 
     [Required]
@@ -30,7 +31,11 @@ public class Listing
     public ListingType Type { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    // Optimistic concurrency token: two tabs editing the same listing no longer silently overwrite each other.
+    [Timestamp]
+    public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 }
 
 /*The idea: One Listing covers both "I can teach this" and "I want to learn this"
-same shape, different Type. That's what lets Epic 3's matching logic just compare Type and Category.*/
+same shape, different Type. That's what lets Epic 3's matching logic just compare Type and Category.*/

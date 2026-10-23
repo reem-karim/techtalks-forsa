@@ -26,7 +26,9 @@ namespace techtalks_forsa.Pages.Browse
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Listing = await _context.Listings.FirstOrDefaultAsync(l => l.Id == id);
+            // B3b: Browse only shows "Offer" listings, so Details must not open "Learn" listings either.
+            Listing = await _context.Listings
+                .FirstOrDefaultAsync(l => l.Id == id && l.Type == ListingType.Offer);
 
             if (Listing == null)
             {
@@ -47,4 +49,4 @@ namespace techtalks_forsa.Pages.Browse
             return Page();
         }
     }
-}
+}

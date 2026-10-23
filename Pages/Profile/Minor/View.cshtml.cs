@@ -36,7 +36,8 @@ namespace techtalks_forsa.Pages.Profile.Minor
             var guardianProfile = await _context.Profiles
                 .FirstOrDefaultAsync(p => p.UserId == userId);
 
-            if (guardianProfile == null || !guardianProfile.IsGuardian)
+            // B8: ownership is what matters. Un-ticking "I am a Guardian" must not lock people out of their own data.
+            if (guardianProfile == null)
             {
                 return Forbid();
             }
@@ -54,4 +55,4 @@ namespace techtalks_forsa.Pages.Profile.Minor
             return Page();
         }
     }
-}
+}

@@ -33,7 +33,7 @@ namespace techtalks_forsa.Pages.Profile.Minor
             [Display(Name = "Child's Name")]
             public string Name { get; set; } = string.Empty;
 
-            [Range(5, 18)]
+            [Range(5, 17, ErrorMessage = "Age must be between 5 and 17. Anyone 18 or older needs their own account.")]
             [Display(Name = "Age")]
             public int Age { get; set; }
 
@@ -64,10 +64,23 @@ namespace techtalks_forsa.Pages.Profile.Minor
                 return Forbid();
             }
 
+            var name = Input.Name.Trim();
+
+            // A4: same child twice = double-click / retry. Don't create a copy, just open the existing profile.
+            var existing = await _context.MinorProfiles.FirstOrDefaultAsync(m =>
+                m.GuardianProfileId == guardianProfile.Id &&
+                m.Name == name &&
+                m.Age == Input.Age);
+
+            if (existing != null)
+            {
+                return RedirectToPage("/Profile/Minor/View", new { id = existing.Id });
+            }
+
             var minorProfile = new MinorProfile
             {
                 GuardianProfileId = guardianProfile.Id,
-                Name = Input.Name,
+                Name = name,
                 Age = Input.Age,
                 Grade = Input.Grade
             };
@@ -80,4 +93,4 @@ namespace techtalks_forsa.Pages.Profile.Minor
                 new { id = minorProfile.Id });
         }
     }
-}
+}
