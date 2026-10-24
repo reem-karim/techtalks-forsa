@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using techtalks_forsa.Data;
+using techtalks_forsa.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +11,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+// FLOW FIX: there is no email service in this MVP, so "confirm your email" only trapped people on a dead-end page.
+// Accounts are now usable right after registering: Register -> signed in -> profile setup -> add skills -> Browse.
+// When a real email sender exists, set this back to true.
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddRazorPages();
+
+builder.Services.AddRazorPages()
+    // FLOW FIX: signed-in users without a profile are always sent to the setup step first.
+    .AddMvcOptions(o => o.Filters.Add<ProfileSetupFilter>());
 
 var app = builder.Build();
 

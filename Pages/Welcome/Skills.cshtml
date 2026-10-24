@@ -1,0 +1,70 @@
+@page
+@model techtalks_forsa.Pages.Welcome.SkillsModel
+
+@{
+    ViewData["Title"] = "Add your skills";
+}
+
+<div class="setup-steps" aria-label="Setup progress">
+    <span class="setup-steps__item is-done">&#10003; 1. Your profile</span>
+    <span class="setup-steps__item is-current">2. Your skills</span>
+    <span class="setup-steps__item">3. Find a swap</span>
+</div>
+
+<div class="page-header">
+    <div>
+        <h1>What do you want to swap?</h1>
+        <p class="page-header__sub">Add one skill you can teach and one you want to learn. Fill in what you like, you can add more later.</p>
+    </div>
+</div>
+
+<form method="post" class="form-card">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="skill-block">
+        <h2><span class="chip">I can teach</span></h2>
+        <div class="form-text">Other members will find this in Find a skill.</div>
+        <div class="row g-3">
+            <div class="col-md-7">
+                <label asp-for="Input.TeachTitle" class="form-label"></label>
+                <input asp-for="Input.TeachTitle" class="form-control" placeholder="e.g. Grade 1-6 Math, Origami for beginners" />
+                <span asp-validation-for="Input.TeachTitle" class="text-danger"></span>
+            </div>
+            <div class="col-md-5">
+                <label asp-for="Input.TeachCategory" class="form-label"></label>
+                <select asp-for="Input.TeachCategory" class="form-select" asp-items="Model.CategoryOptions">
+                    <option value="">-- Category --</option>
+                </select>
+                <span asp-validation-for="Input.TeachCategory" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="skill-block">
+        <h2><span class="chip chip--learn">I want to learn</span></h2>
+        <div class="form-text">We use this to suggest people who can teach you.</div>
+        <div class="row g-3">
+            <div class="col-md-7">
+                <label asp-for="Input.LearnTitle" class="form-label"></label>
+                <input asp-for="Input.LearnTitle" class="form-control" placeholder="e.g. Conversational French, Python" />
+                <span asp-validation-for="Input.LearnTitle" class="text-danger"></span>
+            </div>
+            <div class="col-md-5">
+                <label asp-for="Input.LearnCategory" class="form-label"></label>
+                <select asp-for="Input.LearnCategory" class="form-select" asp-items="Model.CategoryOptions">
+                    <option value="">-- Category --</option>
+                </select>
+                <span asp-validation-for="Input.LearnCategory" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2 align-items-center">
+        <button type="submit" class="btn btn-primary">Save and continue</button>
+        <a asp-page="/Browse/Index" class="btn btn-ghost">Skip for now</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

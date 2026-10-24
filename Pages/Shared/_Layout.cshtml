@@ -3,8 +3,8 @@
     var currentPage = (ViewContext.RouteData.Values["page"] as string) ?? "";
     var isSignedIn = User.Identity?.IsAuthenticated == true;
 
-    bool IsActive(string prefix) =>
-        !isIdentityArea && currentPage.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
+    bool IsActive(params string[] prefixes) =>
+        !isIdentityArea && prefixes.Any(p => currentPage.StartsWith(p, StringComparison.OrdinalIgnoreCase));
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -24,6 +24,7 @@
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/flow.css" asp-append-version="true" />
 </head>
 <body class="@(isIdentityArea ? "page-identity" : "")">
     <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -48,10 +49,9 @@
                     @if (isSignedIn)
                     {
                         <ul class="navbar-nav me-auto ms-lg-3 mb-2 mb-lg-0">
-                            <li class="nav-item"><a class="nav-link@(IsActive("/Browse") ? " active" : "")" aria-current="@(IsActive("/Browse") ? "page" : null)" asp-area="" asp-page="/Browse/Index">Browse</a></li>
-                            <li class="nav-item"><a class="nav-link@(IsActive("/Matches") ? " active" : "")" aria-current="@(IsActive("/Matches") ? "page" : null)" asp-area="" asp-page="/Matches/Index">Matches</a></li>
-                            <li class="nav-item"><a class="nav-link@(IsActive("/Listings") ? " active" : "")" aria-current="@(IsActive("/Listings") ? "page" : null)" asp-area="" asp-page="/Listings/Index">My Listings</a></li>
-                            <li class="nav-item"><a class="nav-link@(IsActive("/SwapRequests") ? " active" : "")" aria-current="@(IsActive("/SwapRequests") ? "page" : null)" asp-area="" asp-page="/SwapRequests/Incoming">Requests</a></li>
+                            <li class="nav-item"><a class="nav-link@(IsActive("/Browse", "/Matches") ? " active" : "")" aria-current="@(IsActive("/Browse", "/Matches") ? "page" : null)" asp-area="" asp-page="/Browse/Index">Find a skill</a></li>
+                            <li class="nav-item"><a class="nav-link@(IsActive("/Listings") ? " active" : "")" aria-current="@(IsActive("/Listings") ? "page" : null)" asp-area="" asp-page="/Listings/Index">My skills</a></li>
+                            <li class="nav-item"><a class="nav-link@(IsActive("/SwapRequests", "/Sessions") ? " active" : "")" aria-current="@(IsActive("/SwapRequests", "/Sessions") ? "page" : null)" asp-area="" asp-page="/SwapRequests/Incoming">Requests</a></li>
                             <li class="nav-item"><a class="nav-link@(IsActive("/Messages") ? " active" : "")" aria-current="@(IsActive("/Messages") ? "page" : null)" asp-area="" asp-page="/Messages/Inbox">Messages</a></li>
                         </ul>
                     }

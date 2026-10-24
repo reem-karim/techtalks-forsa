@@ -1,0 +1,36 @@
+@page
+@model techtalks_forsa.Pages.Sessions.ProposeModel
+
+@{
+    ViewData["Title"] = "Schedule a session";
+}
+
+<a asp-page="/Sessions/Index" class="back-link">&larr; Back to sessions</a>
+
+<div class="page-header">
+    <div>
+        <h1>Schedule a session</h1>
+        <p class="page-header__sub">For the swap about: <strong>@Model.ListingTitle</strong></p>
+    </div>
+</div>
+
+<form method="post" class="form-card">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    <input type="hidden" asp-for="SwapRequestId" />
+
+    <div class="mb-4">
+        <label asp-for="Input.ScheduledAt" class="form-label"></label>
+        <input asp-for="Input.ScheduledAt" type="datetime-local" class="form-control" />
+        <div class="form-text">Pick a time that works for you. Either of you can confirm or cancel it afterwards.</div>
+        <span asp-validation-for="Input.ScheduledAt" class="text-danger"></span>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Propose time</button>
+        <a asp-page="/Sessions/Index" class="btn btn-ghost">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

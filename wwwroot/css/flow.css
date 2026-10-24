@@ -1,0 +1,70 @@
+/* Extra styles for the guided flow. Loaded after site.css. */
+
+/* Setup progress (Step 1 of 2 ...) */
+.setup-steps { display: flex; gap: .5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.setup-steps__item {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .35rem .8rem; border-radius: 999px;
+  background: var(--forsa-cream-2); color: var(--forsa-muted);
+  font-size: .88rem; font-weight: 600;
+}
+.setup-steps__item.is-current { background: var(--forsa-purple-600); color: #fff; }
+.setup-steps__item.is-done { background: var(--forsa-sage-100); color: var(--forsa-sage-ink); }
+
+/* "Your next step" card on the home page */
+.next-card {
+  background: var(--forsa-surface);
+  border: 1px solid var(--forsa-border);
+  border-left: 6px solid var(--forsa-purple-600);
+  border-radius: var(--forsa-radius);
+  box-shadow: var(--forsa-shadow);
+  padding: 1.5rem 1.75rem;
+  max-width: 44rem;
+}
+.next-card h2 { font-size: 1.4rem; margin-bottom: .4rem; }
+.next-card p { color: var(--forsa-muted); margin-bottom: 1.1rem; }
+
+/* Compact checklist */
+.checklist { list-style: none; margin: 0; padding: 0; max-width: 44rem; }
+.checklist li {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .7rem 0; border-bottom: 1px solid var(--forsa-border);
+}
+.checklist li:last-child { border-bottom: 0; }
+.checklist__mark {
+  width: 1.6rem; height: 1.6rem; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 2px solid var(--forsa-input-border); color: transparent; font-size: .85rem; flex-shrink: 0;
+}
+.checklist li.is-done .checklist__mark { background: var(--forsa-sage); border-color: var(--forsa-sage); color: #fff; }
+.checklist li.is-done .checklist__text { color: var(--forsa-muted); text-decoration: line-through; }
+.checklist__text { flex: 1; font-weight: 500; }
+
+/* Quick links row */
+.quick-links { display: flex; flex-wrap: wrap; gap: .6rem; }
+
+/* Swap proposal: "they want to learn" hint + inline new skill box */
+.hint-box {
+  background: var(--forsa-apricot-100);
+  color: var(--forsa-apricot-ink);
+  border-radius: var(--forsa-radius-sm);
+  padding: .8rem 1rem;
+  margin-bottom: 1.5rem;
+}
+.hint-box strong { display: block; margin-bottom: .25rem; }
+.new-skill-box {
+  border: 1px dashed var(--forsa-input-border);
+  border-radius: var(--forsa-radius-sm);
+  padding: 1rem 1.1rem;
+  background: var(--forsa-cream);
+}
+.new-skill-box > summary { cursor: pointer; font-weight: 600; color: var(--forsa-purple-700); }
+.new-skill-box[open] > summary { margin-bottom: 1rem; }
+
+/* Optional sections that are collapsed by default (less overwhelming forms) */
+.more-options > summary { cursor: pointer; font-weight: 600; color: var(--forsa-purple-700); margin-bottom: 1rem; }
+
+/* Skill form blocks on the Welcome page */
+.skill-block { margin-bottom: 1.75rem; }
+.skill-block h2 { font-size: 1.15rem; margin-bottom: .2rem; }
+.skill-block .form-text { margin-bottom: .75rem; }

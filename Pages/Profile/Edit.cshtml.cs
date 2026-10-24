@@ -26,11 +26,14 @@ namespace techtalks_forsa.Pages.Profile
         [BindProperty]
         public ProfileInputModel Input { get; set; } = new();
 
+        // True until the user has saved a profile with a display name once (shows the setup steps).
+        public bool IsFirstSetup { get; set; }
+
         public class ProfileInputModel
         {
-            [Required]
+            [Required(ErrorMessage = "Please enter a name.")]
             [StringLength(100)]
-            [Display(Name = "Display Name")]
+            [Display(Name = "Your name")]
             public string DisplayName { get; set; } = string.Empty;
 
             [StringLength(500)]
@@ -38,18 +41,10 @@ namespace techtalks_forsa.Pages.Profile
             public string? Education { get; set; }
 
             [StringLength(1000)]
-            [Display(Name = "Bio")]
+            [Display(Name = "About you")]
             public string? Bio { get; set; }
 
-            [StringLength(500)]
-            [Display(Name = "I Teach")]
-            public string? Teach { get; set; }
-
-            [StringLength(500)]
-            [Display(Name = "I Want to Learn")]
-            public string? WantToLearn { get; set; }
-
-            [Display(Name = "I am a Guardian (for minors) and I am an adult (18 yrs old or older)")]
+            [Display(Name = "I am a guardian for a minor, and I am 18 or older")]
             public bool IsGuardian { get; set; }
 
             // Concurrency token round-tripped through the form (A9).
@@ -64,24 +59,26 @@ namespace techtalks_forsa.Pages.Profile
             var profile = await _context.Profiles
                 .FirstOrDefaultAsync(p => p.UserId == userId);
 
-            if (profile == null) return;
+            IsFirstSetup = profile == null || string.IsNullOrWhiteSpace(profile.DisplayName);
+
+            if (profile == null)
+            {
+                // Pre-fill a friendly default so the first step is one click.
+                var email = (await _userManager.GetUserAsync(User))?.Email ?? string.Empty;
+                var at = email.IndexOf('@');
+                Input.DisplayName = at > 0 ? email.Substring(0, at) : string.Empty;
+                return;
+            }
 
             Input.DisplayName = profile.DisplayName ?? string.Empty;
             Input.Education = profile.Education;
             Input.Bio = profile.Bio;
-            Input.Teach = profile.Teach;
-            Input.WantToLearn = profile.WantToLearn;
             Input.IsGuardian = profile.IsGuardian;
             Input.RowVersion = profile.RowVersion;
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
             var userId = _userManager.GetUserId(User);
             if (userId == null)
             {
@@ -90,6 +87,14 @@ namespace techtalks_forsa.Pages.Profile
 
             var profile = await _context.Profiles
                 .FirstOrDefaultAsync(p => p.UserId == userId);
+
+            var wasSetUp = profile != null && !string.IsNullOrWhiteSpace(profile.DisplayName);
+            IsFirstSetup = !wasSetUp;
+
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
 
             var isNew = profile == null;
 
@@ -135,7 +140,6 @@ namespace techtalks_forsa.Pages.Profile
             catch (DbUpdateException) when (isNew)
             {
                 // A5: a double-click / second tab created the profile first (unique index on UserId).
-                // Load that profile and update it instead of creating a second one.
                 _context.ChangeTracker.Clear();
 
                 var existing = await _context.Profiles.FirstOrDefaultAsync(p => p.UserId == userId);
@@ -148,17 +152,23 @@ namespace techtalks_forsa.Pages.Profile
                 await _context.SaveChangesAsync();
             }
 
+            // FLOW: first time -> go on to "add your skills". Later edits -> back to the profile.
+            if (!wasSetUp)
+            {
+                return RedirectToPage("/Welcome/Skills");
+            }
+
+            TempData["StatusMessage"] = "Profile saved.";
             return RedirectToPage("/Profile/View");
         }
 
         private void Apply(techtalks_forsa.Models.Profile profile)
         {
-            profile.DisplayName = Input.DisplayName;
+            profile.DisplayName = Input.DisplayName.Trim();
             profile.Education = Input.Education;
             profile.Bio = Input.Bio;
-            profile.Teach = Input.Teach;
-            profile.WantToLearn = Input.WantToLearn;
             profile.IsGuardian = Input.IsGuardian;
+            // Teach / WantToLearn on the Profile row are no longer edited here: skills live in "My skills" (listings).
         }
     }
 }
