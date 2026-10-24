@@ -383,6 +383,10 @@ a { text-decoration-thickness: 1px; text-underline-offset: 3px; }
 .status--pending { background: var(--forsa-apricot-100); color: var(--forsa-apricot-ink); }
 .status--accepted { background: var(--forsa-sage-100); color: var(--forsa-sage-ink); }
 .status--declined { background: var(--forsa-rose-100); color: var(--forsa-rose-ink); }
+.status--requested { background: var(--forsa-apricot-100); color: var(--forsa-apricot-ink); }
+.status--confirmed { background: var(--forsa-sage-100); color: var(--forsa-sage-ink); }
+.status--completed { background: var(--forsa-purple-100); color: var(--forsa-purple-700); }
+.status--cancelled { background: var(--forsa-rose-100); color: var(--forsa-rose-ink); }
 
 /* ---------- Browse: filter bar and skill cards ---------- */
 .filter-bar {

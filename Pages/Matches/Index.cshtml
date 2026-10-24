@@ -7,10 +7,17 @@
 
 <div class="page-header">
     <div>
-        <h1>Suggested matches</h1>
-        <p class="page-header__sub">For every skill you want to learn, here are members who offer something in the same category.</p>
+        <h1>Matched for you</h1>
+        <p class="page-header__sub">People who teach something in the same category as what you want to learn.</p>
     </div>
 </div>
+
+<partial name="_BrowseTabs" />
+
+@if (TempData["StatusMessage"] is string statusMessage)
+{
+    <div class="alert alert-success" role="status">@statusMessage</div>
+}
 
 @if (!Model.Groups.Any())
 {

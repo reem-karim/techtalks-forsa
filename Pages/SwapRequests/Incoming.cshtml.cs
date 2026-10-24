@@ -83,6 +83,10 @@ namespace techtalks_forsa.Pages.SwapRequests
             try
             {
                 await _context.SaveChangesAsync();
+
+                TempData["StatusMessage"] = newStatus == SwapRequestStatus.Accepted
+                    ? "Request accepted. Send them a message or schedule a session below."
+                    : "Request declined.";
             }
             catch (DbUpdateConcurrencyException)
             {

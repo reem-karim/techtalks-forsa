@@ -2,13 +2,26 @@
 @model techtalks_forsa.Pages.Profile.EditModel
 
 @{
-    ViewData["Title"] = "Edit Profile";
+    ViewData["Title"] = Model.IsFirstSetup ? "Set up your profile" : "Edit Profile";
+}
+
+@if (Model.IsFirstSetup)
+{
+    <div class="setup-steps" aria-label="Setup progress">
+        <span class="setup-steps__item is-current">1. Your profile</span>
+        <span class="setup-steps__item">2. Your skills</span>
+        <span class="setup-steps__item">3. Find a swap</span>
+    </div>
 }
 
 <div class="page-header">
     <div>
-        <h1>Edit profile</h1>
-        <p class="page-header__sub">This is what other members see. A friendly name and a short bio build trust.</p>
+        <h1>@(Model.IsFirstSetup ? "Welcome! Let's set up your profile" : "Edit profile")</h1>
+        <p class="page-header__sub">
+            @(Model.IsFirstSetup
+                ? "Only your name is required. You can add the rest later."
+                : "This is what other members see.")
+        </p>
     </div>
 </div>
 
@@ -18,46 +31,39 @@
 
     <div class="mb-4">
         <label asp-for="Input.DisplayName" class="form-label"></label>
-        <input asp-for="Input.DisplayName" class="form-control" placeholder="What should people see you as?" />
+        <input asp-for="Input.DisplayName" class="form-control" placeholder="What should people call you?" autofocus />
         <span asp-validation-for="Input.DisplayName" class="text-danger"></span>
     </div>
 
     <div class="mb-4">
-        <label asp-for="Input.Education" class="form-label"></label>
-        <textarea asp-for="Input.Education" class="form-control" rows="3"></textarea>
-        <span asp-validation-for="Input.Education" class="text-danger"></span>
-        <div class="form-text">Education information is self-reported and has not been verified.</div>
-    </div>
-
-    <div class="mb-4">
         <label asp-for="Input.Bio" class="form-label"></label>
-        <textarea asp-for="Input.Bio" class="form-control" rows="5"></textarea>
+        <textarea asp-for="Input.Bio" class="form-control" rows="4" placeholder="A sentence or two about you (optional)"></textarea>
         <span asp-validation-for="Input.Bio" class="text-danger"></span>
     </div>
 
-    <div class="mb-4">
-        <label asp-for="Input.Teach" class="form-label"></label>
-        <textarea asp-for="Input.Teach" class="form-control" rows="3"
-                  placeholder="Example: Mathematics, Python, English"></textarea>
-        <span asp-validation-for="Input.Teach" class="text-danger"></span>
-    </div>
+    <details class="more-options mb-4" open="@(Model.Input.IsGuardian || !string.IsNullOrWhiteSpace(Model.Input.Education))">
+        <summary>More options</summary>
 
-    <div class="mb-4">
-        <label asp-for="Input.WantToLearn" class="form-label"></label>
-        <textarea asp-for="Input.WantToLearn" class="form-control" rows="3"
-                  placeholder="Example: French, Graphic Design"></textarea>
-        <span asp-validation-for="Input.WantToLearn" class="text-danger"></span>
-    </div>
+        <div class="mb-4">
+            <label asp-for="Input.Education" class="form-label"></label>
+            <textarea asp-for="Input.Education" class="form-control" rows="2"></textarea>
+            <span asp-validation-for="Input.Education" class="text-danger"></span>
+            <div class="form-text">Self-reported and not verified.</div>
+        </div>
 
-    <div class="form-check mb-4">
-        <input asp-for="Input.IsGuardian" class="form-check-input" />
-        <label asp-for="Input.IsGuardian" class="form-check-label"></label>
-        <div class="form-text">Select this only if you are acting as a guardian for a minor.</div>
-    </div>
+        <div class="form-check">
+            <input asp-for="Input.IsGuardian" class="form-check-input" />
+            <label asp-for="Input.IsGuardian" class="form-check-label"></label>
+            <div class="form-text">Select this only if you are an adult looking after a minor.</div>
+        </div>
+    </details>
 
     <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-primary">Save profile</button>
-        <a asp-page="/Profile/View" class="btn btn-ghost">Cancel</a>
+        <button type="submit" class="btn btn-primary">@(Model.IsFirstSetup ? "Save and continue" : "Save profile")</button>
+        @if (!Model.IsFirstSetup)
+        {
+            <a asp-page="/Profile/View" class="btn btn-ghost">Cancel</a>
+        }
     </div>
 </form>
 

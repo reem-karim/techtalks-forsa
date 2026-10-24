@@ -9,9 +9,16 @@
 <div class="page-header">
     <div>
         <h1>Browse skills</h1>
-        <p class="page-header__sub">Find someone who can teach what you want to learn. Pick a category, search by keyword, then open a listing to propose a swap.</p>
+        <p class="page-header__sub">Open a skill you like and propose a swap.</p>
     </div>
 </div>
+
+<partial name="_BrowseTabs" />
+
+@if (TempData["StatusMessage"] is string statusMessage)
+{
+    <div class="alert alert-success" role="status">@statusMessage</div>
+}
 
 <form method="get" class="filter-bar" role="search">
     <div class="filter-bar__field">

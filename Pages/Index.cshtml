@@ -8,52 +8,66 @@
 
 @if (isSignedIn)
 {
+    string nextTitle, nextText, nextButton;
+    string nextPage;
+
+    if (Model.PendingIncoming > 0)
+    {
+        nextTitle = Model.PendingIncoming == 1 ? "1 person wants to swap with you" : $"{Model.PendingIncoming} people want to swap with you";
+        nextText = "Take a look and accept or decline.";
+        nextButton = "Open requests";
+        nextPage = "/SwapRequests/Incoming";
+    }
+    else if (!Model.HasOffer)
+    {
+        nextTitle = "Add a skill you can teach";
+        nextText = "Other members find you through what you offer. Even a hobby counts.";
+        nextButton = "Add my skills";
+        nextPage = "/Welcome/Skills";
+    }
+    else if (!Model.HasLearn)
+    {
+        nextTitle = "Add a skill you want to learn";
+        nextText = "We use it to suggest people who can teach you.";
+        nextButton = "Add a skill to learn";
+        nextPage = "/Welcome/Skills";
+    }
+    else if (Model.SentCount == 0)
+    {
+        nextTitle = "Find someone to swap with";
+        nextText = "These members teach what you want to learn.";
+        nextButton = "See my matches";
+        nextPage = "/Matches/Index";
+    }
+    else
+    {
+        nextTitle = "You're all set";
+        nextText = "Keep exploring skills, or check on your requests.";
+        nextButton = "Find a skill";
+        nextPage = "/Browse/Index";
+    }
+
     <section class="hero pb-0">
-        <p class="eyebrow">Welcome back</p>
-        <h1>What would you like to <em>learn</em> or <em>teach</em> today?</h1>
-        <p class="hero__lead">New here? Follow the four steps below. Already set up? Jump straight into browsing.</p>
-        <div class="hero__cta">
-            <a asp-page="/Browse/Index" class="btn btn-primary btn-lg">Browse skills</a>
-            <a asp-page="/Listings/Create" class="btn btn-outline-primary btn-lg">Post a listing</a>
+        <p class="eyebrow">Welcome back@(string.IsNullOrWhiteSpace(Model.DisplayName) ? "" : ", " + Model.DisplayName)</p>
+        <h1>Your <em>next step</em></h1>
+    </section>
+
+    <section class="section pt-3 pb-3">
+        <div class="next-card">
+            <h2>@nextTitle</h2>
+            <p>@nextText</p>
+            <a asp-page="@nextPage" class="btn btn-primary btn-lg">@nextButton</a>
         </div>
     </section>
 
-    <section class="section" aria-labelledby="start-title">
-        <h2 id="start-title" class="mb-4">Getting started</h2>
-        <div class="row g-4">
-            <div class="col-md-6 col-xl-3">
-                <div class="step">
-                    <span class="step__num">1</span>
-                    <h3>Complete your profile</h3>
-                    <p>Tell people who you are, what you can teach and what you want to learn.</p>
-                    <a asp-page="/Profile/Edit" class="btn btn-outline-primary btn-sm">Edit profile</a>
-                </div>
-            </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="step">
-                    <span class="step__num">2</span>
-                    <h3>Post a listing</h3>
-                    <p>Add one skill you can teach and one you want to learn. That is how we find your matches.</p>
-                    <a asp-page="/Listings/Create" class="btn btn-outline-primary btn-sm">New listing</a>
-                </div>
-            </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="step">
-                    <span class="step__num">3</span>
-                    <h3>Find a swap</h3>
-                    <p>Browse skills or check your suggested matches, then propose a swap.</p>
-                    <a asp-page="/Matches/Index" class="btn btn-outline-primary btn-sm">See my matches</a>
-                </div>
-            </div>
-            <div class="col-md-6 col-xl-3">
-                <div class="step">
-                    <span class="step__num">4</span>
-                    <h3>Chat and meet</h3>
-                    <p>Once a request is accepted, message each other and agree on a time.</p>
-                    <a asp-page="/SwapRequests/Incoming" class="btn btn-outline-primary btn-sm">Check requests</a>
-                </div>
-            </div>
-        </div>
+    <section class="section pt-3" aria-labelledby="progress-title">
+        <h2 id="progress-title" class="mb-3">Your progress</h2>
+        <ul class="checklist">
+            <li class="is-done"><span class="checklist__mark" aria-hidden="true">&#10003;</span><span class="checklist__text">Create your profile</span></li>
+            <li class="@(Model.HasOffer ? "is-done" : "")"><span class="checklist__mark" aria-hidden="true">&#10003;</span><span class="checklist__text">Add a skill you can teach</span>@if (!Model.HasOffer){<a asp-page="/Welcome/Skills" class="btn btn-outline-primary btn-sm">Add</a>}</li>
+            <li class="@(Model.HasLearn ? "is-done" : "")"><span class="checklist__mark" aria-hidden="true">&#10003;</span><span class="checklist__text">Add a skill you want to learn</span>@if (!Model.HasLearn){<a asp-page="/Welcome/Skills" class="btn btn-outline-primary btn-sm">Add</a>}</li>
+            <li class="@(Model.SentCount > 0 ? "is-done" : "")"><span class="checklist__mark" aria-hidden="true">&#10003;</span><span class="checklist__text">Send your first swap request</span>@if (Model.SentCount == 0){<a asp-page="/Browse/Index" class="btn btn-outline-primary btn-sm">Browse</a>}</li>
+        </ul>
     </section>
 
     <section class="section pt-0" aria-labelledby="explore-title">
@@ -81,7 +95,7 @@ else
             </div>
             <div class="col-lg-5 d-none d-lg-block" aria-hidden="true">
                 <div class="hero-art">
-                    <div class="mini mini--1"><span class="chip">I can teach</span><p>Beginner guitar</p><small>Arts &amp; Crafts</small></div>
+                    <div class="mini mini--1"><span class="chip">I can teach</span><p>Origami for beginners</p><small>Arts &amp; Crafts</small></div>
                     <div class="mini mini--2"><span class="chip chip--learn">I want to learn</span><p>Intro to Python</p><small>Technology</small></div>
                     <div class="mini mini--3"><span class="chip">I can teach</span><p>Conversational French</p><small>Languages</small></div>
                 </div>

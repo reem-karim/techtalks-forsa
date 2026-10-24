@@ -1,0 +1,8 @@
+@{
+    var current = (ViewContext.RouteData.Values["page"] as string) ?? "";
+    var onMatches = current.StartsWith("/Matches", StringComparison.OrdinalIgnoreCase);
+}
+<nav class="tabs" aria-label="Find a skill">
+    <a class="tab@(!onMatches ? " active" : "")" aria-current="@(!onMatches ? "page" : null)" asp-page="/Browse/Index">All skills</a>
+    <a class="tab@(onMatches ? " active" : "")" aria-current="@(onMatches ? "page" : null)" asp-page="/Matches/Index">Matched for you</a>
+</nav>

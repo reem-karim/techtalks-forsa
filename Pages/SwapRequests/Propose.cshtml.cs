@@ -35,9 +35,25 @@ namespace techtalks_forsa.Pages.SwapRequests
 
         public List<SelectListItem> MyOfferOptions { get; set; } = new();
 
+        public bool HasOffers => MyOfferOptions.Count > 0;
+
+        public string OwnerDisplayName { get; set; } = "this member";
+
+        // Titles of what the listing's owner wants to learn: a hint for what to offer.
+        public List<string> OwnerWants { get; set; } = new();
+
+        public List<SelectListItem> CategoryOptions => SkillCategories.All
+            .Select(c => new SelectListItem(c, c)).ToList();
+
         public class InputModel
         {
             public int? OfferedListingId { get; set; }
+
+            // FIX: users with no "I can teach" listing got an empty dropdown. They can now add one right here.
+            [StringLength(100)]
+            public string? NewOfferTitle { get; set; }
+
+            public string? NewOfferCategory { get; set; }
 
             [StringLength(500)]
             public string? Message { get; set; }
@@ -53,7 +69,7 @@ namespace techtalks_forsa.Pages.SwapRequests
             var userId = _userManager.GetUserId(User);
             if (TargetListing.OwnerUserId == userId) return Forbid();
 
-            await LoadOptionsAsync(userId!);
+            await LoadPageDataAsync(userId!);
 
             return Page();
         }
@@ -68,15 +84,24 @@ namespace techtalks_forsa.Pages.SwapRequests
             if (userId == null) return Challenge();
             if (TargetListing.OwnerUserId == userId) return Forbid();
 
+            var newTitle = Input.NewOfferTitle?.Trim();
+            var hasNewSkill = !string.IsNullOrEmpty(newTitle);
+
+            if (hasNewSkill &&
+                (string.IsNullOrEmpty(Input.NewOfferCategory) || !SkillCategories.All.Contains(Input.NewOfferCategory)))
+            {
+                ModelState.AddModelError("Input.NewOfferCategory", "Please choose a category for your skill.");
+            }
+
             // B3: enforce [StringLength(500)] instead of letting SQL throw a truncation error.
             if (!ModelState.IsValid)
             {
-                await LoadOptionsAsync(userId);
+                await LoadPageDataAsync(userId);
                 return Page();
             }
 
-            // B2: the offered listing must be one of MY "Offer" listings (or empty).
-            if (Input.OfferedListingId != null)
+            // B2: a picked listing must be one of MY "Offer" listings (or empty).
+            if (!hasNewSkill && Input.OfferedListingId != null)
             {
                 var offeredOk = await _context.Listings.AnyAsync(l =>
                     l.Id == Input.OfferedListingId &&
@@ -86,7 +111,7 @@ namespace techtalks_forsa.Pages.SwapRequests
                 if (!offeredOk)
                 {
                     ModelState.AddModelError(string.Empty, "Please choose one of your own \"I can teach\" listings, or leave it empty.");
-                    await LoadOptionsAsync(userId);
+                    await LoadPageDataAsync(userId);
                     return Page();
                 }
             }
@@ -102,10 +127,38 @@ namespace techtalks_forsa.Pages.SwapRequests
             {
                 RequesterUserId = userId,
                 TargetListingId = TargetListing.Id,
-                OfferedListingId = Input.OfferedListingId,
                 Message = Input.Message,
                 Status = SwapRequestStatus.Pending
             };
+
+            if (hasNewSkill)
+            {
+                // Reuse an identical listing if I already have it, otherwise create it together with the request.
+                var existing = await _context.Listings.FirstOrDefaultAsync(l =>
+                    l.OwnerUserId == userId &&
+                    l.Title == newTitle &&
+                    l.Category == Input.NewOfferCategory &&
+                    l.Type == ListingType.Offer);
+
+                if (existing != null)
+                {
+                    swapRequest.OfferedListingId = existing.Id;
+                }
+                else
+                {
+                    swapRequest.OfferedListing = new Listing
+                    {
+                        OwnerUserId = userId,
+                        Title = newTitle!,
+                        Category = Input.NewOfferCategory!,
+                        Type = ListingType.Offer
+                    };
+                }
+            }
+            else
+            {
+                swapRequest.OfferedListingId = Input.OfferedListingId;
+            }
 
             _context.SwapRequests.Add(swapRequest);
 
@@ -124,15 +177,16 @@ namespace techtalks_forsa.Pages.SwapRequests
                     return NotFound();
                 }
 
-                var existing = await FindBlockingRequestAsync(userId);
-                if (existing != null)
+                var existingBlocker = await FindBlockingRequestAsync(userId);
+                if (existingBlocker != null)
                 {
-                    return await RejectAsync(userId, existing);
+                    return await RejectAsync(userId, existingBlocker);
                 }
 
                 throw;
             }
 
+            TempData["StatusMessage"] = "Request sent! You will see the answer here. Once it is accepted you can message each other.";
             return RedirectToPage("/SwapRequests/Sent");
         }
 
@@ -153,11 +207,15 @@ namespace techtalks_forsa.Pages.SwapRequests
         private async Task<IActionResult> RejectAsync(string userId, SwapRequest blocker)
         {
             // A double-click that already created the request should simply land on "Sent", not on an error.
+            var sameOffer = blocker.OfferedListingId == Input.OfferedListingId ||
+                            !string.IsNullOrWhiteSpace(Input.NewOfferTitle);
+
             if (blocker.Status == SwapRequestStatus.Pending &&
                 blocker.CreatedAt > DateTime.UtcNow.AddSeconds(-30) &&
-                blocker.OfferedListingId == Input.OfferedListingId &&
+                sameOffer &&
                 blocker.Message == Input.Message)
             {
+                TempData["StatusMessage"] = "Request sent! You will see the answer here. Once it is accepted you can message each other.";
                 return RedirectToPage("/SwapRequests/Sent");
             }
 
@@ -168,11 +226,12 @@ namespace techtalks_forsa.Pages.SwapRequests
                 _ => "This request was declined recently. Please wait a few days before asking for the same listing again."
             });
 
-            await LoadOptionsAsync(userId);
+            await LoadPageDataAsync(userId);
             return Page();
         }
 
-        private async Task LoadOptionsAsync(string userId)
+        // Fills the dropdown with MY "I can teach" listings and loads the owner hints shown on the page.
+        private async Task LoadPageDataAsync(string userId)
         {
             var myOffers = await _context.Listings
                 .Where(l => l.OwnerUserId == userId && l.Type == ListingType.Offer)
@@ -182,6 +241,26 @@ namespace techtalks_forsa.Pages.SwapRequests
             MyOfferOptions = myOffers
                 .Select(l => new SelectListItem(l.Title, l.Id.ToString()))
                 .ToList();
+
+            if (TargetListing == null) return;
+
+            var ownerId = TargetListing.OwnerUserId;
+
+            var ownerProfile = await _context.Profiles
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.UserId == ownerId);
+
+            if (ownerProfile != null && !string.IsNullOrWhiteSpace(ownerProfile.DisplayName))
+            {
+                OwnerDisplayName = ownerProfile.DisplayName;
+            }
+
+            OwnerWants = await _context.Listings
+                .AsNoTracking()
+                .Where(l => l.OwnerUserId == ownerId && l.Type == ListingType.Learn)
+                .OrderBy(l => l.Title)
+                .Select(l => l.Title)
+                .ToListAsync();
         }
     }
 }

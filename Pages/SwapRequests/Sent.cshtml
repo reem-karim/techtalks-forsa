@@ -50,6 +50,7 @@ else
                 @if (r.Status == techtalks_forsa.Models.SwapRequestStatus.Accepted)
                 {
                     <div class="request-card__actions">
+                          <a asp-page="/Sessions/Propose" asp-route-swapRequestId="@r.Id" class="btn btn-primary btn-sm">Schedule a session</a>
                         <a asp-page="/Messages/Thread" asp-route-userId="@r.TargetListing!.OwnerUserId" class="btn btn-outline-primary btn-sm">Send a message</a>
                     </div>
                 }

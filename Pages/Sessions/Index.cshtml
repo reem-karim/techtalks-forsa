@@ -1,0 +1,87 @@
+@page
+@model techtalks_forsa.Pages.Sessions.IndexModel
+@using techtalks_forsa.Models
+
+@{
+    ViewData["Title"] = "My sessions";
+}
+
+<div class="page-header">
+    <div>
+        <h1>My sessions</h1>
+        <p class="page-header__sub">Learning sessions you have arranged once a swap was accepted.</p>
+    </div>
+</div>
+
+<partial name="_RequestsTabs" />
+
+@if (TempData["StatusMessage"] is string statusMessage)
+{
+    <div class="alert alert-info" role="status">@statusMessage</div>
+}
+
+@if (!Model.MySessions.Any())
+{
+    <div class="empty">
+        <div class="empty__icon" aria-hidden="true">&#10022;</div>
+        <h2>No sessions yet</h2>
+        <p>Once a swap request is accepted, choose "Schedule a session" on the Requests page to pick a time.</p>
+        <a asp-page="/SwapRequests/Incoming" class="btn btn-primary">Go to requests</a>
+    </div>
+}
+else
+{
+    <div class="request-list">
+        @foreach (var s in Model.MySessions)
+        {
+            var otherUserId = s.SwapRequest!.RequesterUserId == Model.CurrentUserId
+                ? s.SwapRequest.TargetListing!.OwnerUserId
+                : s.SwapRequest.RequesterUserId;
+
+            <article class="request-card">
+                <div class="request-card__head">
+                    <div>
+                        <p class="eyebrow">Swap about</p>
+                        <h2 class="request-card__title">@s.SwapRequest.TargetListing?.Title</h2>
+                    </div>
+                    <span class="status status--@(s.Status.ToString().ToLowerInvariant())">@s.Status</span>
+                </div>
+
+                <dl class="request-card__meta">
+                    <dt>When</dt>
+                    <dd>@(s.ScheduledAt?.ToString("f") ?? "Not set")</dd>
+                </dl>
+
+                <div class="request-card__actions">
+                    @if (s.Status == SessionStatus.Requested)
+                    {
+                        <form method="post" asp-page-handler="Confirm" class="d-inline">
+                            <input type="hidden" name="id" value="@s.Id" />
+                            <button type="submit" class="btn btn-success btn-sm">Confirm</button>
+                        </form>
+                    }
+                    @if (s.Status == SessionStatus.Confirmed)
+                    {
+                        <form method="post" asp-page-handler="Complete" class="d-inline">
+                            <input type="hidden" name="id" value="@s.Id" />
+                            <button type="submit" class="btn btn-primary btn-sm">Mark as completed</button>
+                        </form>
+                    }
+                    @if (s.Status == SessionStatus.Requested || s.Status == SessionStatus.Confirmed)
+                    {
+                        <form method="post" asp-page-handler="Cancel" class="d-inline">
+                            <input type="hidden" name="id" value="@s.Id" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm"
+                                    onclick="return confirm('Cancel this session?');">Cancel</button>
+                        </form>
+                    }
+                    @if (s.Status == SessionStatus.Cancelled)
+                    {
+                        <a asp-page="/Sessions/Propose" asp-route-swapRequestId="@s.SwapRequestId" class="btn btn-outline-primary btn-sm">Reschedule</a>
+                    }
+                    <a asp-page="/Messages/Thread" asp-route-userId="@otherUserId" class="btn btn-outline-primary btn-sm">Send a message</a>
+                </div>
+            </article>
+        }
+    </div>
+}

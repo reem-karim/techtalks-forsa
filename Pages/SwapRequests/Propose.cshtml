@@ -5,12 +5,14 @@
     ViewData["Title"] = "Propose a Swap";
 }
 
-<a asp-page="/Browse/Index" class="back-link">&larr; Back to Browse</a>
+<a asp-page="/Browse/Details" asp-route-id="@Model.ListingId" class="back-link">&larr; Back to the listing</a>
 
 <div class="page-header">
     <div>
         <h1>Propose a swap</h1>
-        <p class="page-header__sub">You're asking about: <strong>@Model.TargetListing?.Title</strong></p>
+        <p class="page-header__sub">
+            You want to learn <strong>@Model.TargetListing?.Title</strong> from <strong>@Model.OwnerDisplayName</strong>.
+        </p>
     </div>
 </div>
 
@@ -18,24 +20,60 @@
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
     <input type="hidden" asp-for="ListingId" />
 
-    <div class="mb-4">
-        <label asp-for="Input.OfferedListingId" class="form-label">What will you offer in exchange? <span class="text-muted fw-normal">(optional)</span></label>
-        <select asp-for="Input.OfferedListingId" class="form-select" asp-items="Model.MyOfferOptions">
-            <option value="">-- Just ask, no offer yet --</option>
-        </select>
-        <div class="form-text">Pick one of your own "I can teach" listings. You can also leave this empty.</div>
-    </div>
+    @if (Model.OwnerWants.Any())
+    {
+        <div class="hint-box">
+            <strong>@Model.OwnerDisplayName wants to learn:</strong>
+            @string.Join(", ", Model.OwnerWants)
+        </div>
+    }
 
+    <h2 class="h5 mb-3">1. What will you offer in return?</h2>
+
+    @if (Model.HasOffers)
+    {
+        <div class="mb-3">
+            <label asp-for="Input.OfferedListingId" class="form-label">Pick one of your skills</label>
+            <select asp-for="Input.OfferedListingId" class="form-select" asp-items="Model.MyOfferOptions">
+                <option value="">-- No offer, just ask --</option>
+            </select>
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">You haven't added a skill you can teach yet. Add one below so they know what you can offer (or skip it and just ask).</p>
+    }
+
+    <details class="new-skill-box mb-4" open="@(!Model.HasOffers || !string.IsNullOrWhiteSpace(Model.Input.NewOfferTitle))">
+        <summary>@(Model.HasOffers ? "Or add a new skill to offer" : "Add a skill you can teach")</summary>
+        <div class="row g-3">
+            <div class="col-md-7">
+                <label asp-for="Input.NewOfferTitle" class="form-label">Skill</label>
+                <input asp-for="Input.NewOfferTitle" class="form-control" placeholder="e.g. e.g. Origami for beginners" />
+                <span asp-validation-for="Input.NewOfferTitle" class="text-danger"></span>
+            </div>
+            <div class="col-md-5">
+                <label asp-for="Input.NewOfferCategory" class="form-label">Category</label>
+                <select asp-for="Input.NewOfferCategory" class="form-select" asp-items="Model.CategoryOptions">
+                    <option value="">-- Category --</option>
+                </select>
+                <span asp-validation-for="Input.NewOfferCategory" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-text mt-2">It is saved to My skills too. If you fill this in, it is used instead of the pick above.</div>
+    </details>
+
+    <h2 class="h5 mb-3">2. Say hello</h2>
     <div class="mb-4">
-        <label asp-for="Input.Message" class="form-label">Message</label>
-        <textarea asp-for="Input.Message" class="form-control" rows="5"
-                  placeholder="Introduce yourself and explain what you're proposing..."></textarea>
+        <label asp-for="Input.Message" class="visually-hidden">Message</label>
+        <textarea asp-for="Input.Message" class="form-control" rows="4"
+                  placeholder="Introduce yourself and say when you are free (optional)"></textarea>
         <span asp-validation-for="Input.Message" class="text-danger"></span>
     </div>
 
     <div class="d-flex gap-2">
         <button type="submit" class="btn btn-primary">Send request</button>
-        <a asp-page="/Browse/Index" class="btn btn-ghost">Cancel</a>
+        <a asp-page="/Browse/Details" asp-route-id="@Model.ListingId" class="btn btn-ghost">Cancel</a>
     </div>
 </form>
 
